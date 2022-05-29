@@ -1,0 +1,570 @@
+#####################################################################
+#Import
+####################################################################
+from genericpath import exists
+from os import listdir
+from os.path import isfile, join
+import os.path
+import os
+from random import random
+from xml.sax.xmlreader import AttributesImpl
+from termcolor import colored
+import getpass
+import requests as req
+import time
+import cmd_fonction as cmdf
+os.system("clear")
+####################################################################
+#Dico commande and app plus chargement
+####################################################################
+cmdf.charg()
+mdpt="6"
+com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes""\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système""\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés""\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers""\nopendir - ouvrir un dossier""\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe""\nren - renomer un fichier""\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible",
+     "store":"Bienvenue dans le store de Cmd OS, voici les modules disponibles :""\nrandom - générer un nombre aléatoire""\ntime - attendre un temps""\nmusic - permet de jouer un son""\nuuid - générer des identifiants aléatoire""\nimage - permet d'afficher une image""\nbrowser - permet d'afficher une page web""\nprint - permet d'afficher du texte en couleur dans la console""\nPour installer un module, faites <<store install>> suivie du nom du module""\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module""Pour voir la liste des modules installés faites <<store list>>",}
+app={"random":"0",
+     "time":"0",
+     "music":"0",
+     "uuid":"0",
+     "image":"0",
+     "browser":"0",
+     "print":"0"}
+def appinitext():
+    if not os.path.exists("/home/pi/Documents/CmdOS/random.txt"):
+        randomtext=open("random.txt","w")
+        randomtext.write(app[0])
+        randomtext.close()
+    else:
+        import random
+        randomtext=open("random.txt",'r')
+        data=randomtext.readlines()
+        app.update({"random":str(data[0])})
+        randomtext.close()
+    if not os.path.exists("/home/pi/Documents/CmdOS/time.txt"):
+        timetext=open("time.txt","w")
+        timetext.write(app[1])
+        timetext.close()
+    else:
+        import time
+        timetext=open("time.txt",'r')
+        data=timetext.readlines()
+        app.update({"time":str(data[0])})
+        timetext.close()
+    if not os.path.exists("/home/pi/Documents/CmdOS/music.txt"):
+        musictext=open("music.txt","w")
+        musictext.write(app[2])
+        musictext.close()
+    else:
+        import simpleaudio as sa
+        musictext=open("music.txt",'r')
+        data=musictext.readlines()
+        app.update({"music":str(data[0])})
+        musictext.close()
+    if not os.path.exists("uuid.txt"):
+        uuidtext=open("uuid.txt","w")
+        uuidtext.write(app[3])
+        uuidtext.close()
+    else:
+        import uuid
+        import random
+        uuidtext=open("uuid.txt",'r')
+        data=uuidtext.readlines()
+        app.update({"uuid":str(data[0])})
+        uuidtext.close()
+    if not os.path.exists("image.txt"):
+        imagetext=open("image.txt","w")
+        imagetext.write(app[4])
+        imagetext.close()
+    else:
+        from PIL import Image
+        imagetext=open("image.txt",'r')
+        data=imagetext.readlines()
+        app.update({"image":str(data[0])})
+        imagetext.close()
+    if not os.path.exists("browser.txt"):
+        browsertext=open("browser.txt","w")
+        browsertext.write(app[5])
+        browsertext.close()
+    else:
+        import webbrowser
+        browsertext=open("browser.txt",'r')
+        data=browsertext.readlines()
+        app.update({"browser":str(data[0])})
+        browsertext.close()
+    if not os.path.exists("print.txt"):
+        printtext=open("print.txt","w")
+        printtext.write(app[6])
+        printtext.close()
+    else:
+        printtext=open("print.txt",'r')
+        data=printtext.readlines()
+        app.update({"print":str(data[0])})
+        printtext.close()
+appinitext()
+info={"sys":"Cmd OS v1.12 - Basé en Python",
+      "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
+      "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
+      "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
+      "uuid":"Module Uuid""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module uuid4",
+      "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module PIL",
+      "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module browser",
+      "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module termcolor"} 
+adresse="/home/pi/Documents/CmdOS"
+if not os.path.exists(adresse)==True:
+    while not os.path.exists(adresse)==True:
+        adresse=input("Le système n'a pas démmarrer correctement, veulliez rentrer le chemin absolu du dossier ou se trouve le fichier CmdOS.py : ")
+if not os.path.exists("/home/pi/Documents/CmdOS/mdp.txt"):
+    mdptext=open("mdp.txt","w")
+    mdptext.write(mdpt)
+    mdptext.close()
+else:
+    mdptext=open("mdp.txt",'r')
+    data=mdptext.readlines()
+    mdpt=data[0]
+    mdptext.close()
+repmdp=""
+print(colored("""Cmd OS v1.12""","green",attrs=["bold"])) 
+def cmd(adressef,mdptt,app,mdptext,repmdp):
+    charginstall=1
+    while True:
+        version="1.12"
+        if app["random"]=="1":
+            import random
+        if app["time"]=="1":
+            import time
+        if app["music"]=="1":
+            import simpleaudio as sa
+        if app["uuid"]=="1":
+            import random
+            import uuid
+        if app["image"]=="1":
+            from PIL import Image
+        if app["browser"]=="1":
+            import webbrowser
+        demande=colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "                                                                                                      
+        rep=input(demande)
+        if rep in com:
+            print(com[rep])
+        elif rep=="uuid":
+            if app.get("uuid")=="1":
+                uuid.uuid4()
+                while True:
+                    id=str(uuid.uuid4())
+                    trimmed=id[:random.randint(0,len(id)-1)]
+                    spaces=" " * random.randint(0,15)
+                    print(f"{spaces}{trimmed}")
+            else:
+                print("Ce module n'est pas installé ou n'existe pas")
+        elif rep.startswith("del"):
+            supr=rep.split()
+            if len(supr)==2:
+                fichiers = os.listdir(adressef)
+                if supr[1] in fichiers:
+                    del_1=adressef+"/"+supr[1]
+                    os.remove(del_1)
+                else:
+                    print("Le fichier/dossier n'existe pas")
+            else:
+                print("La commande n'est pas bien formulée")
+        elif rep.startswith("opendir"):
+            opendir=rep.split()
+            if len(opendir)==2:
+                if type(opendir[1])==str:
+                    fichiers = os.listdir(adressef)
+                    if opendir[1] in fichiers:
+                        adressef=adresse+"/"+opendir[1]
+                    else:
+                        print(colored("Ce dossier est n'existe pas","yellow",attrs=["bold"]))
+                else:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("La commande est mal formulée","red",attrs=["bold"]))
+        elif rep.startswith("ren"):
+            ren=rep[4::]
+            fichiers = os.listdir(adressef)
+            if ren in fichiers:
+                ren2=adressef+"/"+ren
+                ren3=input("Nouveau nom : ")
+                os.rename(ren2, ren3)
+            else:
+                print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
+        elif rep.startswith("cd"):
+            cd=rep.split()
+            if len(cd)>=2:
+                if type(cd[1])==str:
+                    if len(cd)==3:
+                        adressef=cd[1]+cd[2]
+                    elif len(cd)==4:
+                        adressef=cd[1]+cd[2]+cd[3]
+                    else:
+                        adressef=cd[1]
+                else:
+                    print(colored("Le dossier n'est pas valide","yellow",attrs=["bold"]))
+            else:
+                print(colored("La commande est mal formulée","red",attrs=["bold"]))
+        elif rep=="dir":
+            fichiers = os.listdir(adressef)
+            longueur=len(fichiers)
+            print("Voici les fichiers/dossiers dans ce dossier :")
+            for element in range(longueur):
+                print(" ",fichiers[element])
+        elif rep.startswith("store install "):
+            install=rep[14::]
+            if install in app: 
+                app.update({install:"1"})
+                if charginstall==1:
+                    cmdf.charg(0.3,colored("Installation du module...","blue",attrs=["bold"]))
+                install2=colored("Le module ","blue",attrs=["bold"])+colored(install,"blue",attrs=["bold","underline"])+colored(" a bien été installé","blue",attrs=["bold"])
+                print(install2)
+                if install=="random":
+                    import random
+                    appt=open("random.txt","w")
+                    appt.write(app.get("random"))
+                    appt.close()
+                if install=="time":
+                    import time
+                    appt=open("time.txt","w")
+                    appt.write(app.get("time"))
+                    appt.close()
+                if install=="music":
+                    import simpleaudio as sa
+                    appt=open("music.txt","w")
+                    appt.write(app.get("music"))
+                    appt.close()
+                if install=="uuid":
+                    import uuid
+                    import random
+                    appt=open("uuid.txt","w")
+                    appt.write(app.get("uuid"))
+                    appt.close()
+                if install=="image":
+                    from PIL import Image
+                    appt=open("image.txt","w")
+                    appt.write(app.get("image"))
+                    appt.close()
+                if install=="browser":
+                    import webbrowser
+                    appt=open("browser.txt","w")
+                    appt.write(app.get("browser"))
+                    appt.close()
+                if install=="print":
+                    appt=open("print.txt","w")
+                    appt.write(app.get("print"))
+                    appt.close()
+            else:
+                print(colored("L'app que vous essayez d'installer n'existe pas","red",attrs=["bold"]))
+        elif rep.startswith("random"):
+            if app.get("random")=="1":
+                    error=0
+                    aleatoire=rep.split()
+                    try:
+                        aleatoire[1]=int(aleatoire[1])
+                        aleatoire[2]=int(aleatoire[2])
+                    except:
+                        print(colored("La commande n'accepte que des nombres","yellow",attrs=["bold"]))
+                        error=1
+                    if len(aleatoire)==3 and type(aleatoire[1])==int and type(aleatoire[2]==int):
+                        random_1=aleatoire[1]
+                        random_2=aleatoire[2]
+                        print("Le nombre est",random.randint(random_1,random_2))
+                    else:
+                        if error==0:
+                            print(colored("La commande est mal formulée","red",attrs=["bold"]))
+                    error=0
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("time"):
+            if app.get("time")=="1":
+                    error=0
+                    temps=rep.split()
+                    try:
+                        temps[1]=float(temps[1])
+                    except:
+                        print(colored("Le module time n'accepte que des nombres","red",attrs=["bold"]))
+                        error=1
+                    if len(temps)==2 and type(temps[1])==float:
+                        temps_1=temps[1]
+                        time.sleep(temps_1)
+                    else:
+                        if error==0:
+                            print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+            error=0
+        elif rep=="shutdown":
+            break
+        elif rep.startswith("info"):
+            info_command=rep.split()
+            if len(info_command)==2:
+                if info_command[1] in info:
+                    print(info[info_command[1]])
+                else:
+                    print(colored("Le module n'existe pas","yellow",attrs=["bold"]))
+            else:
+                print(colored("La commande est mal formulé","red",attrs=["bold"]))
+        elif rep.startswith("store uninstall "):
+            uninstall=rep[16::]
+            if uninstall in app:
+                if app.get(uninstall)=="1":
+                    app.update({uninstall:"0"})
+                    uninstall1=colored("Le module ","blue",attrs=["bold"])+colored(uninstall,"blue",attrs=["bold","underline"])+colored(" a bien été desinstallé","blue",attrs=["bold"])
+                    print(uninstall1)
+                    if uninstall=="random":
+                        appt=open("random.txt","w")
+                        appt.write(app.get("random"))
+                        appt.close()
+                    if uninstall=="time":
+                        appt=open("time.txt","w")
+                        appt.write(app.get("time"))
+                        appt.close()
+                    if uninstall=="music":
+                        appt=open("music.txt","w")
+                        appt.write(app.get("music"))
+                        appt.close()
+                    if uninstall=="uuid":
+                        appt=open("uuid.txt","w")
+                        appt.write(app.get("uuid"))
+                        appt.close()
+                    if uninstall=="image":
+                        appt=open("image.txt","w")
+                        appt.write(str(app.get("image")))
+                        appt.close()
+                    if uninstall=="browser":
+                        appt=open("browser.txt","w")
+                        appt.write(str(app.get("browser")))
+                        appt.close()
+                    if uninstall=="print":
+                        appt=open("print.txt","w")
+                        appt.write(str(app.get("print")))
+                        appt.close()
+                else:
+                    print(colored("L'app que vous essayez de désinstaller n'est pas installée","yellow",attrs=["bold"]))
+            else:
+                print(colored("L'app que vous voulez desinstaller n'existe pas","yellow",attrs=["bold"]))
+        elif rep.startswith("music"):
+            if app.get("music")=="1":
+                    error=0
+                    music=rep.split()
+                    if music[1]=="store":
+                        print("Voici votre musique :")
+                        fichiers = os.listdir(adressef+"/music")
+                        longueur=len(fichiers)
+                        for element in range(longueur):
+                            print(" ",fichiers[element])
+                    if len(music)==3:
+                        if music[1]=="play":
+                            fichiers = os.listdir(adressef+"/music")
+                            musicplay=rep[11::]
+                            if musicplay in fichiers:
+                                musicd=adressef+"/music"/+musicplay
+                                wave_object = sa.WaveObject.from_wave_file(musicd)
+                                print(colored("Le son suivant va être lu : ","blue",attrs=["bold"]))
+                                play_object = wave_object.play()
+                            else:
+                                print(colored("Ce fichier n'existe pas","yellow",attrs=["bold"]))
+                        else:
+                            print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("image"):
+            if app.get("image")=="1":
+                    error=0
+                    image=rep.split()
+                    if image[1]=="store":
+                        print("Voici votre phototèque :")
+                        fichiers = os.listdir(adressef+"/image")
+                        longueur=len(fichiers)
+                        for element in range(longueur):
+                            print(" ",fichiers[element])
+                    if len(image)==3:
+                        if image[1]=="display":
+                            fichiers = os.listdir(adressef+"/image")
+                            imgaffich=rep[14::]
+                            print(imgaffich)
+                            if imgaffich in fichiers:
+                                imgd=adressef+"/image/"+imgaffich
+                                im = Image.open(imgd)
+                                im.show()
+                            else:
+                                print(colored("Ce fichier n'existe pas","yellow",attrs=["bold"]))
+                        else:
+                            print(colored("La commande est mal formulé","red",attrs=["bold"]))
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("mdp"):
+            mdp=rep.split()
+            if len(mdp)==1:
+                if not mdptt=="6":
+                    mdpdise="Le mot de passe est :"+mdptt
+                    print(colored(mdpdise,"blue",attrs=["bold"]))
+                else:
+                    print(colored("Le mot de passe est désactivé","blue",attrs=["bold"]))
+            elif len(mdp)==2:
+                if type(mdp[1])==str:
+                    if mdp[1]=="act":
+                        if mdptt=="6":
+                            mdptt=input("Taper votre nouveau mot de passe : ")
+                            mdptext=open("mdp.txt","w")
+                            mdptext.write(mdptt)
+                            mdptext.close()
+                        else:
+                            print(colored("Le mot de passe est déja activé","yellow",attrs=["bold"]))
+                    elif mdp[1]=="disact":
+                        if not mdptt=="6":
+                            print(colored("Le mot de passe a bien été désactivé","blue",attrs=["bold"]))
+                            mdptt="6"
+                            mdptext=open("mdp.txt","w")
+                            mdptext.write(mdptt)
+                            mdptext.close()
+                        else:
+                            print(colored("Le mot de passe est déja desactivé","yellow",attrs=["bold"]))
+                else:
+                    print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
+            else:
+                print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
+        elif rep.startswith("browser"):
+            if app.get("browser")=="1":
+                browser=rep[8::]
+                if type(browser)==str:
+                    webbrowser.open(browser)
+                else:
+                    print(colored("L'URl n'est pas bonne","red"))
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("update"):
+            update=rep.split()
+            if len(update)==2:    
+                if update[1]=="upgrade":
+                    print(colored("Vous allez télécharger le fichier zip contenant les fichiers d'installation\nExtrayer dans le dossier de fonctionnement de ce fichier python puis supprimmer tous les fichiers de l'ancienne version\nEnfin, démmarer le fichier CmdOS.py et indiquer le chemin d'accès du dossier de l'ancienne version","blue"))
+                    webbrowser.open("https://github.com/lolo859/CmdOS/archive/refs/heads/main.zip")
+                elif update[1]=="check":
+                    versiontxt=req.get("https://biotech-online.pagesperso-orange.fr/Mathias/cmdversion",allow_redirects=True)
+                    open("cmdversion.txt","wb").write(versiontxt.content)
+                    vertxt=open("cmdversion.txt","r")
+                    verlist=vertxt.readlines()
+                    vertxt.close()
+                    if str(verlist[0])==version:
+                        versionprint="CmdOS "+version
+                        print(colored(versionprint,"green",attrs=["bold"]))
+                        print(colored("Votre système est à jour","blue",attrs=["bold"]))
+                    elif str(verlist[0])<version:
+                        versionprint="Vous êtes actuellement sur la version de développement "+version
+                        print(colored(versionprint,"blue",attrs=["bold"]))
+                        print(colored("Cette version peut être instable","yellow",attrs=["bold"]))
+                        print(colored("Vous pouvez retourner à la version public avec update upgrade","blue",attrs=["bold"]))
+                    else:
+                        print(colored("Votre système n'est pas a jour","yellow",attrs=["bold"]))
+                        versionprint="La dernière version disponible est CmdOS "+verlist[0]
+                        print(colored(versionprint,"yellow",attrs=["bold"]))
+                        print(colored("Vous pouvez mettre a jour le système avec update upgrade","blue",attrs=["bold"]))
+                else:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("La commande est mal formulée","red",attrs=["bold"]))
+        elif rep.startswith("print"):
+            error=0
+            if app.get("print")=="1":
+                if len(rep)>=9:
+                    colorp={"b":"blue","g":"green","r":"red","w":"white","y":"yellow","m":"magenta","c":"cyan"}
+                    if rep[6] in colorp:
+                        colorprint=colorp.get(rep[6])
+                    else:
+                        print(colored("Cette couleur n'est pas prise en charge","red",attrs=["bold"]))
+                        error=1
+                    print1=rep[8::]
+                    if error==0:
+                        print(colored(print1,colorprint))
+                else:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep=="store list":
+            if app.get("random")=="1":
+                print(colored("Le module random est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module random n'est pas installé","blue",attrs=["bold"]))
+            if app.get("time")=="1":
+                print(colored("Le module time est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module time n'est pas installé","blue",attrs=["bold"]))
+            if app.get("music")=="1":
+                print(colored("Le module music est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module music n'est pas installé","blue",attrs=["bold"]))
+            if app.get("uuid")=="1":
+                print(colored("Le module uuid est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module uuid n'est pas installé","blue",attrs=["bold"]))
+            if app.get("image")=="1":
+                print(colored("Le module image est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module image n'est pas installé","blue",attrs=["bold"]))
+            if app.get("browser")=="1":
+                print(colored("Le module browser est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module browser n'est pas installé","blue",attrs=["bold"]))
+            if app.get("print")=="1":
+                print(colored("Le module print est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module print n'est pas installé","blue",attrs=["bold"]))
+        elif rep=="clear":
+            os.system("clear")
+        elif rep=="godmode":
+            print(colored("Le godmode est un ensemble de fonctions et de paramètres conçus pour les dévéloppeurs, n'y toucher seulement si vous savez ce que vous faites","yellow",attrs=["bold"]))
+            godmode1=input(colored("Quelle fonction voulez vous activer/utilisez ? : ","blue",attrs=["bold"]))
+            if godmode1=="sys.report":
+                print("Le report permet d'afficher la valeur des variables systèmes")
+                input("Taper entrer pour exécuter")
+                print("mdpt='"+mdpt+"'")
+                print("app='"+str(app)+"'")
+                print("adressef='"+adressef+"'")
+                print("repmdp='"+repmdp+"'")
+                print("version='"+version+"'")
+                print("godmode1='"+godmode1+"'")
+            if godmode1=="sys.store.install.vanish_loading":
+                print("Cette fonction permet de masquer le chargement lors de l'installation d'un module")
+                input("Taper entrer pour exécuter")
+                vanish_loading="Entrer votre choix (valeur actuelle : "+str(charginstall)+") : "
+                godmode2=input(vanish_loading)
+                if int(godmode2)==1 or int(godmode2)==0 :
+                    charginstall=int(godmode2)
+                else:
+                    print("La valeur entrée n'est pas correcte")
+            if godmode1=="sys.protocol.list":
+                print("Cette fonction permet de voir quel protocole système fait quelle action")
+                input("Taper entrer pour exécuter")
+                print("login() - protocole qui demande le mot de passe et lance le protocole desktop(adresse,mdpt,app,mdptext,repmdp)")
+                print("desktop(adressef,mdptt,app,mdptext,repmdp) - protocole qui gère les interactions avec l'utilisateur")
+                print("appinitext() - protocole qui récupère les modules installés ou non")
+                print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
+            if godmode1=="sys.protocol.execute":
+                print("Cette fonction éxécute le protocole demandé (elle positionne automatiquement les arguments)")
+                input("Taper entrer pour exécuter")
+                godmode2=input("Quel protocole voulez vous éxécuter ? : ")
+                if godmode2=="appintext":
+                    appinitext()
+                if godmode2=="desktop":
+                    cmd(adresse,mdpt,app,mdptext,repmdp)
+                if godmode2=="login":
+                    login()
+        else:
+            if not rep=="":
+                print(rep,": cette commande n'existe pas : essayer help")
+def login():
+    if not mdpt=="6":
+        print("Taper",colored("shutdown",attrs=["bold"]),"pour éteindre")
+        repmdp=input("Taper votre mot de passe : ")
+        if repmdp==mdpt:
+            print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
+            cmd(adresse,mdpt,app,mdptext,repmdp)
+            return
+        elif repmdp=="shutdown":
+            return
+        else:
+            print("Le mot de passe est incorrect")
+    else:
+        print("""Taper "help" pour plus d'information""")
+        cmd(adresse,mdpt,app,mdptext,repmdp)
+        return
+while True :
+    login()
+    break
