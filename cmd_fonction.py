@@ -1,6 +1,7 @@
 import time
 import os
 from termcolor import colored
+import requests as req
 
 def charg(chrag1=0.1,t=colored("Démarrage du système...","blue",attrs=["bold"])):
     os.system("clear")

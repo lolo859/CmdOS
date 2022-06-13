@@ -17,9 +17,10 @@ os.system("clear")
 ####################################################################
 #Dico commande and app plus chargement
 ####################################################################
+admin=0
 cmdf.charg()
 mdpt="6"
-com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes""\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système""\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés""\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers""\nopendir - ouvrir un dossier""\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe""\nren - renomer un fichier""\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible",
+com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes""\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système""\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés""\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers""\nopendir - ouvrir un dossier""\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe""\nren - renomer un fichier""\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible""\nadmin - active ou désactive le mode admin",
      "store":"Bienvenue dans le store de Cmd OS, voici les modules disponibles :""\nrandom - générer un nombre aléatoire""\ntime - attendre un temps""\nmusic - permet de jouer un son""\nuuid - générer des identifiants aléatoire""\nimage - permet d'afficher une image""\nbrowser - permet d'afficher une page web""\nprint - permet d'afficher du texte en couleur dans la console""\nPour installer un module, faites <<store install>> suivie du nom du module""\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module""Pour voir la liste des modules installés faites <<store list>>",}
 app={"random":"0",
      "time":"0",
@@ -100,7 +101,7 @@ def appinitext():
         app.update({"print":str(data[0])})
         printtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.12 - Basé en Python",
+info={"sys":"Cmd OS v1.13 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -122,11 +123,11 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.12""","green",attrs=["bold"])) 
-def cmd(adressef,mdptt,app,mdptext,repmdp):
+print(colored("""Cmd OS v1.13""","green",attrs=["bold"])) 
+def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
     charginstall=1
     while True:
-        version="1.12"
+        version="1.13"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -140,10 +141,35 @@ def cmd(adressef,mdptt,app,mdptext,repmdp):
             from PIL import Image
         if app["browser"]=="1":
             import webbrowser
-        demande=colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "                                                                                                      
+        if admin==0:
+            demande=colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "
+        else:
+            demande=colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
         if rep in com:
             print(com[rep])
+        elif rep.startswith("admin"):
+            admin1=rep.split()
+            if len(admin1)==2:
+                if admin1[1]=="on":
+                    if admin==0:
+                        demande=colored("Taper votre mot de passe : ","blue",attrs=["bold"])
+                        repmdp=input(demande)
+                        if repmdp==mdptt:
+                            admin=1
+                        else:
+                            print(colored("Le mot de passe est incorrect","red",attrs=["bold"]))
+                    else:
+                        print(colored("Le mode admin est déja activé","yellow",attrs=["bold"]))
+                elif admin1[1]=="off":
+                    if admin==1:
+                        admin=0
+                    else:
+                        print(colored("Le mode admin est déja désactivé","yellow",attrs=["bold"]))
+                else:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("La commande est mal formulée","red",attrs=["bold"]))
         elif rep=="uuid":
             if app.get("uuid")=="1":
                 uuid.uuid4()
@@ -153,7 +179,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp):
                     spaces=" " * random.randint(0,15)
                     print(f"{spaces}{trimmed}")
             else:
-                print("Ce module n'est pas installé ou n'existe pas")
+                print(colored("Ce module n'est pas installé ou n'existe pas","red",attrs=["bold"]))
         elif rep.startswith("del"):
             supr=rep.split()
             if len(supr)==2:
@@ -162,9 +188,9 @@ def cmd(adressef,mdptt,app,mdptext,repmdp):
                     del_1=adressef+"/"+supr[1]
                     os.remove(del_1)
                 else:
-                    print("Le fichier/dossier n'existe pas")
+                    print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
             else:
-                print("La commande n'est pas bien formulée")
+                print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
         elif rep.startswith("opendir"):
             opendir=rep.split()
             if len(opendir)==2:
@@ -509,43 +535,46 @@ def cmd(adressef,mdptt,app,mdptext,repmdp):
         elif rep=="clear":
             os.system("clear")
         elif rep=="godmode":
-            print(colored("Le godmode est un ensemble de fonctions et de paramètres conçus pour les dévéloppeurs, n'y toucher seulement si vous savez ce que vous faites","yellow",attrs=["bold"]))
-            godmode1=input(colored("Quelle fonction voulez vous activer/utilisez ? : ","blue",attrs=["bold"]))
-            if godmode1=="sys.report":
-                print("Le report permet d'afficher la valeur des variables systèmes")
-                input("Taper entrer pour exécuter")
-                print("mdpt='"+mdpt+"'")
-                print("app='"+str(app)+"'")
-                print("adressef='"+adressef+"'")
-                print("repmdp='"+repmdp+"'")
-                print("version='"+version+"'")
-                print("godmode1='"+godmode1+"'")
-            if godmode1=="sys.store.install.vanish_loading":
-                print("Cette fonction permet de masquer le chargement lors de l'installation d'un module")
-                input("Taper entrer pour exécuter")
-                vanish_loading="Entrer votre choix (valeur actuelle : "+str(charginstall)+") : "
-                godmode2=input(vanish_loading)
-                if int(godmode2)==1 or int(godmode2)==0 :
-                    charginstall=int(godmode2)
-                else:
-                    print("La valeur entrée n'est pas correcte")
-            if godmode1=="sys.protocol.list":
-                print("Cette fonction permet de voir quel protocole système fait quelle action")
-                input("Taper entrer pour exécuter")
-                print("login() - protocole qui demande le mot de passe et lance le protocole desktop(adresse,mdpt,app,mdptext,repmdp)")
-                print("desktop(adressef,mdptt,app,mdptext,repmdp) - protocole qui gère les interactions avec l'utilisateur")
-                print("appinitext() - protocole qui récupère les modules installés ou non")
-                print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
-            if godmode1=="sys.protocol.execute":
-                print("Cette fonction éxécute le protocole demandé (elle positionne automatiquement les arguments)")
-                input("Taper entrer pour exécuter")
-                godmode2=input("Quel protocole voulez vous éxécuter ? : ")
-                if godmode2=="appintext":
-                    appinitext()
-                if godmode2=="desktop":
-                    cmd(adresse,mdpt,app,mdptext,repmdp)
-                if godmode2=="login":
-                    login()
+            if admin==1:
+                print(colored("Le godmode est un ensemble de fonctions et de paramètres conçus pour les dévéloppeurs, n'y toucher seulement si vous savez ce que vous faites","yellow",attrs=["bold"]))
+                godmode1=input(colored("Quelle fonction voulez vous activer/utilisez ? : ","blue",attrs=["bold"]))
+                if godmode1=="sys.report":
+                    print("Le report permet d'afficher la valeur des variables systèmes")
+                    input("Taper entrer pour exécuter")
+                    print("mdpt='"+mdpt+"'")
+                    print("app='"+str(app)+"'")
+                    print("adressef='"+adressef+"'")
+                    print("repmdp='"+repmdp+"'")
+                    print("version='"+version+"'")
+                    print("godmode1='"+godmode1+"'")
+                if godmode1=="sys.store.install.vanish_loading":
+                    print("Cette fonction permet de masquer le chargement lors de l'installation d'un module")
+                    input("Taper entrer pour exécuter")
+                    vanish_loading="Entrer votre choix (valeur actuelle : "+str(charginstall)+") : "
+                    godmode2=input(vanish_loading)
+                    if int(godmode2)==1 or int(godmode2)==0 :
+                        charginstall=int(godmode2)
+                    else:
+                        print("La valeur entrée n'est pas correcte")
+                if godmode1=="sys.protocol.list":
+                    print("Cette fonction permet de voir quel protocole système fait quelle action")
+                    input("Taper entrer pour exécuter")
+                    print("login() - protocole qui demande le mot de passe et lance le protocole desktop(adresse,mdpt,app,mdptext,repmdp,admin)")
+                    print("desktop(adressef,mdptt,app,mdptext,repmdp,admin) - protocole qui gère les interactions avec l'utilisateur")
+                    print("appinitext() - protocole qui récupère les modules installés ou non")
+                    print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
+                if godmode1=="sys.protocol.execute":
+                    print("Cette fonction éxécute le protocole demandé (elle positionne automatiquement les arguments)")
+                    input("Taper entrer pour exécuter")
+                    godmode2=input("Quel protocole voulez vous éxécuter ? : ")
+                    if godmode2=="appintext":
+                        appinitext()
+                    if godmode2=="desktop":
+                        cmd(adresse,mdpt,app,mdptext,repmdp)
+                    if godmode2=="login":
+                        login()
+            else:
+                print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser le godmode","red",attrs=["bold"]))
         else:
             if not rep=="":
                 print(rep,": cette commande n'existe pas : essayer help")
@@ -555,7 +584,7 @@ def login():
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
-            cmd(adresse,mdpt,app,mdptext,repmdp)
+            cmd(adresse,mdpt,app,mdptext,repmdp,admin)
             return
         elif repmdp=="shutdown":
             return
@@ -563,7 +592,7 @@ def login():
             print("Le mot de passe est incorrect")
     else:
         print("""Taper "help" pour plus d'information""")
-        cmd(adresse,mdpt,app,mdptext,repmdp)
+        cmd(adresse,mdpt,app,mdptext,repmdp,admin)
         return
 while True :
     login()
