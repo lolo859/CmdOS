@@ -13,6 +13,7 @@ import getpass
 import requests as req
 import time
 import cmd_fonction as cmdf
+from datetime import datetime
 os.system("clear")
 ####################################################################
 #Dico commande and app plus chargement
@@ -20,7 +21,7 @@ os.system("clear")
 admin=0
 cmdf.charg()
 mdpt="6"
-com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes""\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système""\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés""\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers""\nopendir - ouvrir un dossier""\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe""\nren - renomer un fichier""\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible""\nadmin - active ou désactive le mode admin",
+com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes""\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système""\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés""\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers""\nopendir - ouvrir un dossier""\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe""\nren - renomer un fichier""\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible""\nadmin - active ou désactive le mode admin""\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
      "store":"Bienvenue dans le store de Cmd OS, voici les modules disponibles :""\nrandom - générer un nombre aléatoire""\ntime - attendre un temps""\nmusic - permet de jouer un son""\nuuid - générer des identifiants aléatoire""\nimage - permet d'afficher une image""\nbrowser - permet d'afficher une page web""\nprint - permet d'afficher du texte en couleur dans la console""\nPour installer un module, faites <<store install>> suivie du nom du module""\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module""Pour voir la liste des modules installés faites <<store list>>",}
 app={"random":"0",
      "time":"0",
@@ -101,7 +102,7 @@ def appinitext():
         app.update({"print":str(data[0])})
         printtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.13 - Basé en Python",
+info={"sys":"Cmd OS v1.14 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -123,11 +124,13 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.13""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.14""","green",attrs=["bold"])) 
 def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
+    log=["Voici les logs :"]
     charginstall=1
+    displaysplit=0
     while True:
-        version="1.13"
+        version="1.14"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -146,10 +149,18 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
         else:
             demande=colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
+        if admin==1:
+            heure=datetime.now().time()
+            log.append(colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
+        else:
+            heure=datetime.now().time()
+            log.append(colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
         if rep in com:
             print(com[rep])
         elif rep.startswith("admin"):
             admin1=rep.split()
+            if displaysplit==1:
+                print(admin1)
             if len(admin1)==2:
                 if admin1[1]=="on":
                     if admin==0:
@@ -182,6 +193,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(colored("Ce module n'est pas installé ou n'existe pas","red",attrs=["bold"]))
         elif rep.startswith("del"):
             supr=rep.split()
+            if displaysplit==1:
+                print(supr)
             if len(supr)==2:
                 fichiers = os.listdir(adressef)
                 if supr[1] in fichiers:
@@ -193,6 +206,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
         elif rep.startswith("opendir"):
             opendir=rep.split()
+            if displaysplit==1:
+                print(opendir)
             if len(opendir)==2:
                 if type(opendir[1])==str:
                     fichiers = os.listdir(adressef)
@@ -206,6 +221,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
         elif rep.startswith("ren"):
             ren=rep[4::]
+            if displaysplit==1:
+                print(ren)
             fichiers = os.listdir(adressef)
             if ren in fichiers:
                 ren2=adressef+"/"+ren
@@ -215,6 +232,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
         elif rep.startswith("cd"):
             cd=rep.split()
+            if displaysplit==1:
+                print(cd)
             if len(cd)>=2:
                 if type(cd[1])==str:
                     if len(cd)==3:
@@ -282,6 +301,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if app.get("random")=="1":
                     error=0
                     aleatoire=rep.split()
+                    if displaysplit==1:
+                        print(aleatoire)
                     try:
                         aleatoire[1]=int(aleatoire[1])
                         aleatoire[2]=int(aleatoire[2])
@@ -302,6 +323,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if app.get("time")=="1":
                     error=0
                     temps=rep.split()
+                    if displaysplit==1:
+                        print(temps)
                     try:
                         temps[1]=float(temps[1])
                     except:
@@ -320,6 +343,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             break
         elif rep.startswith("info"):
             info_command=rep.split()
+            if displaysplit==1:
+                print(info_command)
             if len(info_command)==2:
                 if info_command[1] in info:
                     print(info[info_command[1]])
@@ -370,6 +395,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if app.get("music")=="1":
                     error=0
                     music=rep.split()
+                    if displaysplit==1:
+                        print(music)
                     if music[1]=="store":
                         print("Voici votre musique :")
                         fichiers = os.listdir(adressef+"/music")
@@ -395,6 +422,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if app.get("image")=="1":
                     error=0
                     image=rep.split()
+                    if displaysplit==1:
+                        print(image)
                     if image[1]=="store":
                         print("Voici votre phototèque :")
                         fichiers = os.listdir(adressef+"/image")
@@ -418,6 +447,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
         elif rep.startswith("mdp"):
             mdp=rep.split()
+            if displaysplit==1:
+                print(mdp)
             if len(mdp)==1:
                 if not mdptt=="6":
                     mdpdise="Le mot de passe est :"+mdptt
@@ -458,6 +489,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
         elif rep.startswith("update"):
             update=rep.split()
+            if displaysplit==1:
+                print(update)
             if len(update)==2:    
                 if update[1]=="upgrade":
                     print(colored("Vous allez télécharger le fichier zip contenant les fichiers d'installation\nExtrayer dans le dossier de fonctionnement de ce fichier python puis supprimmer tous les fichiers de l'ancienne version\nEnfin, démmarer le fichier CmdOS.py et indiquer le chemin d'accès du dossier de l'ancienne version","blue"))
@@ -573,8 +606,32 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                         cmd(adresse,mdpt,app,mdptext,repmdp)
                     if godmode2=="login":
                         login()
+                if godmode1=="sys.protocol.cmd.display_split":
+                    print("Cette fonction permet d'afficher le split de la variable rep lors du traitement de la commande")
+                    input("Taper entrer pour exécuter")
+                    display_split="Entrer votre choix (valeur actuelle : "+str(displaysplit)+") : "
+                    godmode3=input(display_split)
+                    if int(godmode3)==1 or int(godmode3)==0 :
+                        displaysplit=int(godmode3)
+                    else:
+                        print("La valeur entrée n'est pas correcte")
             else:
                 print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser le godmode","red",attrs=["bold"]))
+        elif rep.startswith("log"):
+            if admin==1:
+                log1=rep.split()
+                if len(log1)==2 and type(log1[1])==str:
+                    if log1[1]=="show":
+                        for lettre in log:
+                            print(lettre)
+                    elif log1[1]=="delete":
+                        log=["Voici les logs :"]
+                    else:
+                        print(colored("La commande est mal formulée","red",attrs=["bold"]))
+                else:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser cette commande","red",attrs=["bold"]))
         else:
             if not rep=="":
                 print(rep,": cette commande n'existe pas : essayer help")
