@@ -2,6 +2,7 @@
 #Import
 ####################################################################
 from genericpath import exists
+#from msvcrt import open_osfhandle
 from os import listdir
 from os.path import isfile, join
 import os.path
@@ -21,7 +22,18 @@ os.system("clear")
 admin=0
 cmdf.charg()
 mdpt="6"
-com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes""\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système""\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés""\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers""\nopendir - ouvrir un dossier""\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe""\nren - renomer un fichier""\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible""\nadmin - active ou désactive le mode admin""\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
+com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes"
+     "\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système"
+     "\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"
+     "\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers"
+     "\nopendir - ouvrir un dossier"
+     "\nmdp - Voir si le mot de passe est actif ou non :\n   act - active le mot de passe\n   disact - desactive le mot de passe"
+     "\nren - renomer un fichier"
+     "\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"
+     "\nadmin - active ou désactive le mode admin"
+     "\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
+     "\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"
+     "\nshell (version raccourci : sh) - ouvre le cmd"
      "store":"Bienvenue dans le store de Cmd OS, voici les modules disponibles :""\nrandom - générer un nombre aléatoire""\ntime - attendre un temps""\nmusic - permet de jouer un son""\nuuid - générer des identifiants aléatoire""\nimage - permet d'afficher une image""\nbrowser - permet d'afficher une page web""\nprint - permet d'afficher du texte en couleur dans la console""\nPour installer un module, faites <<store install>> suivie du nom du module""\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module""Pour voir la liste des modules installés faites <<store list>>",}
 app={"random":"0",
      "time":"0",
@@ -102,7 +114,7 @@ def appinitext():
         app.update({"print":str(data[0])})
         printtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.14 - Basé en Python",
+info={"sys":"Cmd OS v1.15 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -124,13 +136,13 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.14""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.15""","green",attrs=["bold"])) 
 def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
     log=["Voici les logs :"]
     charginstall=1
     displaysplit=0
     while True:
-        version="1.14"
+        version="1.15"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -157,6 +169,20 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             log.append(colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
         if rep in com:
             print(com[rep])
+        elif rep.startswith("detail"):
+            detail1=rep.split()
+            if displaysplit==1:
+                print(detail1)
+            if len(detail1)>1:
+                detail2=rep[7::]
+                fichiers = os.listdir(adressef)
+                if detail2 in fichiers:
+                    detail3=adressef+"/"+detail2
+                    print(os.stat(detail3))
+                else:
+                    print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
+            else:
+                print(colored("La commande est mal formulée",'red',attrs=["bold"]))
         elif rep.startswith("admin"):
             admin1=rep.split()
             if displaysplit==1:
@@ -339,7 +365,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             else:
                 print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
             error=0
-        elif rep=="shutdown":
+        elif rep=="shutdown" or rep=="sh" or rep=="shell":
             break
         elif rep.startswith("info"):
             info_command=rep.split()
