@@ -238,7 +238,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 if type(opendir[1])==str:
                     fichiers = os.listdir(adressef)
                     if opendir[1] in fichiers:
-                        adressef=adresse+"/"+opendir[1]
+                        adressef=adressef+"/"+opendir[1]
                     else:
                         print(colored("Ce dossier est n'existe pas","yellow",attrs=["bold"]))
                 else:
