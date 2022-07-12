@@ -114,7 +114,7 @@ def appinitext():
         app.update({"print":str(data[0])})
         printtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.15 - Basé en Python",
+info={"sys":"Cmd OS v1.15.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -136,13 +136,13 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.15""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.15.1""","green",attrs=["bold"])) 
 def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
     log=["Voici les logs :"]
     charginstall=1
     displaysplit=0
     while True:
-        version="1.15"
+        version="1.15.1"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
