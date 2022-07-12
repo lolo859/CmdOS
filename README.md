@@ -11,3 +11,5 @@ Démarrage de CmdOS :
 ![Demo](https://github.com/lolo859/CmdOS/blob/main/gif/start.gif)
 
 Exemple de navigation dans un dossier :
+
+![Demo](https://github.com/lolo859/CmdOS/blob/main/gif/navigation.gif)
