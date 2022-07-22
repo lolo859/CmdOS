@@ -31,10 +31,9 @@ com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la list
      "\nren - renomer un fichier"
      "\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"
      "\nadmin - active ou désactive le mode admin"
-     "\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
+     "\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"
      "\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"
-     "\nshell (version raccourci : sh) - ouvre le cmd"
-     "store":"Bienvenue dans le store de Cmd OS, voici les modules disponibles :""\nrandom - générer un nombre aléatoire""\ntime - attendre un temps""\nmusic - permet de jouer un son""\nuuid - générer des identifiants aléatoire""\nimage - permet d'afficher une image""\nbrowser - permet d'afficher une page web""\nprint - permet d'afficher du texte en couleur dans la console""\nPour installer un module, faites <<store install>> suivie du nom du module""\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module""Pour voir la liste des modules installés faites <<store list>>",}
+     "\nshell (version raccourci : sh) - ouvre le cmd"}
 app={"random":"0",
      "time":"0",
      "music":"0",
@@ -114,7 +113,7 @@ def appinitext():
         app.update({"print":str(data[0])})
         printtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.15.1 - Basé en Python",
+info={"sys":"Cmd OS v1.15.2 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -136,13 +135,14 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.15.1""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.15.2""","green",attrs=["bold"])) 
 def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
     log=["Voici les logs :"]
     charginstall=1
     displaysplit=0
+    store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.15.1"
+        version="1.15.2"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -169,6 +169,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             log.append(colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
         if rep in com:
             print(com[rep])
+        elif rep=="store":
+            print(store)
         elif rep.startswith("detail"):
             detail1=rep.split()
             if displaysplit==1:
@@ -621,8 +623,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 if godmode1=="sys.protocol.list":
                     print("Cette fonction permet de voir quel protocole système fait quelle action")
                     input("Taper entrer pour exécuter")
-                    print("login() - protocole qui demande le mot de passe et lance le protocole desktop(adresse,mdpt,app,mdptext,repmdp,admin)")
-                    print("desktop(adressef,mdptt,app,mdptext,repmdp,admin) - protocole qui gère les interactions avec l'utilisateur")
+                    print("login() - protocole qui demande le mot de passe et lance le protocole cmd(adresse,mdpt,app,mdptext,repmdp,admin)")
+                    print("cmd(adressef,mdptt,app,mdptext,repmdp,admin) - protocole qui gère les interactions avec l'utilisateur")
                     print("appinitext() - protocole qui récupère les modules installés ou non")
                     print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
                 if godmode1=="sys.protocol.execute":
@@ -631,7 +633,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                     godmode2=input("Quel protocole voulez vous éxécuter ? : ")
                     if godmode2=="appintext":
                         appinitext()
-                    if godmode2=="desktop":
+                    if godmode2=="cmd":
                         cmd(adresse,mdpt,app,mdptext,repmdp)
                     if godmode2=="login":
                         login()
@@ -649,6 +651,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
         elif rep.startswith("log"):
             if admin==1:
                 log1=rep.split()
+                if displaysplit==1:
+                    print(log1)
                 if len(log1)==2 and type(log1[1])==str:
                     if log1[1]=="show":
                         for lettre in log:
