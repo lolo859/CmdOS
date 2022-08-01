@@ -113,7 +113,7 @@ def appinitext():
         app.update({"print":str(data[0])})
         printtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.15.2 - Basé en Python",
+info={"sys":"Cmd OS v1.16 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -121,11 +121,15 @@ info={"sys":"Cmd OS v1.15.2 - Basé en Python",
       "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module PIL",
       "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module browser",
       "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module termcolor"} 
-adresse="/home/pi/Documents/CmdOS"
+adresse=os.path.realpath(__file__)
+adresse=os.path.dirname(adresse)
 if not os.path.exists(adresse)==True:
     while not os.path.exists(adresse)==True:
         adresse=input("Le système n'a pas démmarrer correctement, veulliez rentrer le chemin absolu du dossier ou se trouve le fichier CmdOS.py : ")
-if not os.path.exists("/home/pi/Documents/CmdOS/mdp.txt"):
+if not(os.path.exists(adresse+"/image") and os.path.exists(adresse+"/music") and os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/gif") and os.path.exists(adresse+"/__pycache__")):
+    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe: image, music, __pycache__, gif et README.md.","red",attrs=["bold"]))
+    quit()
+if not os.path.exists(adresse+"/mdp.txt"):
     mdptext=open("mdp.txt","w")
     mdptext.write(mdpt)
     mdptext.close()
@@ -135,14 +139,15 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.15.2""","green",attrs=["bold"])) 
-def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
+print(colored("""Cmd OS v1.16""","green",attrs=["bold"])) 
+def cmd():
+    global adresse,mdpt,app,mdptext,repmdp,admin
     log=["Voici les logs :"]
     charginstall=1
     displaysplit=0
     store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.15.2"
+        version="1.16"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -157,9 +162,9 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
         if app["browser"]=="1":
             import webbrowser
         if admin==0:
-            demande=colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "
+            demande=colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(adresse,"blue",attrs=["bold"])+" >>> "
         else:
-            demande=colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+" "+colored(adressef,"blue",attrs=["bold"])+" >>> "
+            demande=colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+" "+colored(adresse,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
         if admin==1:
             heure=datetime.now().time()
@@ -177,9 +182,9 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(detail1)
             if len(detail1)>1:
                 detail2=rep[7::]
-                fichiers = os.listdir(adressef)
+                fichiers = os.listdir(adresse)
                 if detail2 in fichiers:
-                    detail3=adressef+"/"+detail2
+                    detail3=adresse+"/"+detail2
                     print(os.stat(detail3))
                 else:
                     print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
@@ -194,7 +199,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                     if admin==0:
                         demande=colored("Taper votre mot de passe : ","blue",attrs=["bold"])
                         repmdp=input(demande)
-                        if repmdp==mdptt:
+                        if repmdp==mdpt:
                             admin=1
                         else:
                             print(colored("Le mot de passe est incorrect","red",attrs=["bold"]))
@@ -224,9 +229,9 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if displaysplit==1:
                 print(supr)
             if len(supr)==2:
-                fichiers = os.listdir(adressef)
+                fichiers = os.listdir(adresse)
                 if supr[1] in fichiers:
-                    del_1=adressef+"/"+supr[1]
+                    del_1=adresse+"/"+supr[1]
                     os.remove(del_1)
                 else:
                     print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
@@ -238,12 +243,12 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 print(opendir)
             if len(opendir)==2:
                 if type(opendir[1])==str:
-                    fichiers = os.listdir(adressef)
-                    if opendir[1] in fichiers:
-                        if not adressef=="/":
-                            adressef=adressef+"/"+opendir[1]
+                    fichiers = os.listdir(adresse)
+                    if opendir[1] in fichiers and not "." in opendir[1]:
+                        if not adresse=="/":
+                            adresse=adresse+"/"+opendir[1]
                         else:
-                            adressef=adressef+opendir[1]
+                            adresse=adresse+opendir[1]
                     else:
                         print(colored("Ce dossier est n'existe pas","yellow",attrs=["bold"]))
                 else:
@@ -254,9 +259,9 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             ren=rep[4::]
             if displaysplit==1:
                 print(ren)
-            fichiers = os.listdir(adressef)
+            fichiers = os.listdir(adresse)
             if ren in fichiers:
-                ren2=adressef+"/"+ren
+                ren2=adresse+"/"+ren
                 ren3=input("Nouveau nom : ")
                 os.rename(ren2, ren3)
             else:
@@ -266,19 +271,19 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if displaysplit==1:
                 print(cd)
             if len(cd)>=2:
-                if type(cd[1])==str:
+                if type(cd[1])==str and os.path.exists(cd[1]):
                     if len(cd)==3:
-                        adressef=cd[1]+cd[2]
+                        adresse=cd[1]+cd[2]
                     elif len(cd)==4:
-                        adressef=cd[1]+cd[2]+cd[3]
+                        adresse=cd[1]+cd[2]+cd[3]
                     else:
-                        adressef=cd[1]
+                        adresse=cd[1]
                 else:
                     print(colored("Le dossier n'est pas valide","yellow",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
         elif rep=="dir":
-            fichiers = os.listdir(adressef)
+            fichiers = os.listdir(adresse)
             longueur=len(fichiers)
             print("Voici les fichiers/dossiers dans ce dossier :")
             for element in range(longueur):
@@ -430,16 +435,16 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                         print(music)
                     if music[1]=="store":
                         print("Voici votre musique :")
-                        fichiers = os.listdir(adressef+"/music")
+                        fichiers = os.listdir(adresse+"/music")
                         longueur=len(fichiers)
                         for element in range(longueur):
                             print(" ",fichiers[element])
                     if len(music)==3:
                         if music[1]=="play":
-                            fichiers = os.listdir(adressef+"/music")
+                            fichiers = os.listdir(adresse+"/music")
                             musicplay=rep[11::]
                             if musicplay in fichiers:
-                                musicd=adressef+"/music"/+musicplay
+                                musicd=adresse+"/music"/+musicplay
                                 wave_object = sa.WaveObject.from_wave_file(musicd)
                                 print(colored("Le son suivant va être lu : ","blue",attrs=["bold"]))
                                 play_object = wave_object.play()
@@ -457,17 +462,17 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                         print(image)
                     if image[1]=="store":
                         print("Voici votre phototèque :")
-                        fichiers = os.listdir(adressef+"/image")
+                        fichiers = os.listdir(adresse+"/image")
                         longueur=len(fichiers)
                         for element in range(longueur):
                             print(" ",fichiers[element])
                     if len(image)==3:
                         if image[1]=="display":
-                            fichiers = os.listdir(adressef+"/image")
+                            fichiers = os.listdir(adresse+"/image")
                             imgaffich=rep[14::]
                             print(imgaffich)
                             if imgaffich in fichiers:
-                                imgd=adressef+"/image/"+imgaffich
+                                imgd=adresse+"/image/"+imgaffich
                                 im = Image.open(imgd)
                                 im.show()
                             else:
@@ -481,27 +486,27 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
             if displaysplit==1:
                 print(mdp)
             if len(mdp)==1:
-                if not mdptt=="6":
-                    mdpdise="Le mot de passe est :"+mdptt
+                if not mdpt=="6":
+                    mdpdise="Le mot de passe est :"+mdpt
                     print(colored(mdpdise,"blue",attrs=["bold"]))
                 else:
                     print(colored("Le mot de passe est désactivé","blue",attrs=["bold"]))
             elif len(mdp)==2:
                 if type(mdp[1])==str:
                     if mdp[1]=="act":
-                        if mdptt=="6":
-                            mdptt=input("Taper votre nouveau mot de passe : ")
+                        if mdpt=="6":
+                            mdpt=input("Taper votre nouveau mot de passe : ")
                             mdptext=open("mdp.txt","w")
-                            mdptext.write(mdptt)
+                            mdptext.write(mdpt)
                             mdptext.close()
                         else:
                             print(colored("Le mot de passe est déja activé","yellow",attrs=["bold"]))
                     elif mdp[1]=="disact":
-                        if not mdptt=="6":
+                        if not mdpt=="6":
                             print(colored("Le mot de passe a bien été désactivé","blue",attrs=["bold"]))
-                            mdptt="6"
+                            mdpt="6"
                             mdptext=open("mdp.txt","w")
-                            mdptext.write(mdptt)
+                            mdptext.write(mdpt)
                             mdptext.close()
                         else:
                             print(colored("Le mot de passe est déja desactivé","yellow",attrs=["bold"]))
@@ -607,7 +612,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                     input("Taper entrer pour exécuter")
                     print("mdpt='"+mdpt+"'")
                     print("app='"+str(app)+"'")
-                    print("adressef='"+adressef+"'")
+                    print("adresse='"+adresse+"'")
                     print("repmdp='"+repmdp+"'")
                     print("version='"+version+"'")
                     print("godmode1='"+godmode1+"'")
@@ -623,8 +628,8 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                 if godmode1=="sys.protocol.list":
                     print("Cette fonction permet de voir quel protocole système fait quelle action")
                     input("Taper entrer pour exécuter")
-                    print("login() - protocole qui demande le mot de passe et lance le protocole cmd(adresse,mdpt,app,mdptext,repmdp,admin)")
-                    print("cmd(adressef,mdptt,app,mdptext,repmdp,admin) - protocole qui gère les interactions avec l'utilisateur")
+                    print("login() - protocole qui demande le mot de passe et lance le protocole cmd()")
+                    print("cmd() - protocole qui gère les interactions avec l'utilisateur")
                     print("appinitext() - protocole qui récupère les modules installés ou non")
                     print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
                 if godmode1=="sys.protocol.execute":
@@ -634,7 +639,7 @@ def cmd(adressef,mdptt,app,mdptext,repmdp,admin):
                     if godmode2=="appintext":
                         appinitext()
                     if godmode2=="cmd":
-                        cmd(adresse,mdpt,app,mdptext,repmdp)
+                        cmd()
                     if godmode2=="login":
                         login()
                 if godmode1=="sys.protocol.cmd.display_split":
@@ -674,7 +679,7 @@ def login():
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
-            cmd(adresse,mdpt,app,mdptext,repmdp,admin)
+            cmd()
             return
         elif repmdp=="shutdown":
             return
@@ -682,7 +687,7 @@ def login():
             print("Le mot de passe est incorrect")
     else:
         print("""Taper "help" pour plus d'information""")
-        cmd(adresse,mdpt,app,mdptext,repmdp,admin)
+        cmd()
         return
 while True :
     login()
