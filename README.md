@@ -4,16 +4,12 @@ Type help to get the list of commands. It is currently only available in French.
 All modules are already installed.
 The password is "mat"
 
-<h1>Quelque exemple/h1>
+<h1>Quelque exemple</h1>
 
-Démarrage de CmdOS :
+Le système démarre et l'utilisateur tape la commande "help" :
 
 <img src="https://github.com/lolo859/CmdOS/blob/main/gif/start.gif" width=800 height=750 />  
-  
-coucou
-  
-![Demo](https://github.com/lolo859/CmdOS/blob/main/gif/start.gif)
 
-Exemple de navigation dans un dossier :
+Exemple de navigation dans une arborescence :
 
-![Demo](https://github.com/lolo859/CmdOS/blob/main/gif/navigation.gif)
+<img src="https://github.com/lolo859/CmdOS/blob/main/gif/navigation.gif" width=800 height=750 />  
