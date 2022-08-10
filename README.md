@@ -8,7 +8,7 @@ The password is "mat"
 
 Démarrage de CmdOS :
 
-<img src="https://github.com/lolo859/CmdOS/blob/main/gif/start.gif" width=250 height=250 />  
+<img src="https://github.com/lolo859/CmdOS/blob/main/gif/start.gif" width=800 height=750 />  
   
 coucou
   
