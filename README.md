@@ -4,10 +4,14 @@ Type help to get the list of commands. It is currently only available in French.
 All modules are already installed.
 The password is "mat"
 
-<h1>Quelque conseil</h1>
+<h1>Quelque exemple/h1>
 
 Démarrage de CmdOS :
 
+<img src="https://github.com/lolo859/CmdOS/blob/main/gif/start.gif" width=250 height=250 />  
+  
+coucou
+  
 ![Demo](https://github.com/lolo859/CmdOS/blob/main/gif/start.gif)
 
 Exemple de navigation dans un dossier :
