@@ -58,7 +58,6 @@ joblib==1.1.0
 jproperties==2.1.1
 jupyter-client==5.2.3
 jupyter-core==4.4.0
-kazam==1.4.5
 keep==2.10.1
 keyboard==0.13.5
 keyring==17.1.1
