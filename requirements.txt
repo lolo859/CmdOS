@@ -21,7 +21,6 @@ colorzero==1.1
 cookies==2.2.1
 cPython==0.0.6
 cryptography==2.6.1
-cssselect==1.0.3
 cupshelpers==1.0
 cycler==0.10.0
 Cython==0.29.28
@@ -205,3 +204,4 @@ Werkzeug==0.14.1
 wrapt==1.10.11
 yarg==0.1.9
 zipp==3.7.0
+psycopg2==2.5.3
