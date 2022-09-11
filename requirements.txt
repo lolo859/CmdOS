@@ -123,7 +123,6 @@ pyquery==1.4.3
 pyscreenshot==3.0
 pyserial==3.4
 pysmbc==1.0.15.6
-python-apt==1.8.4.3
 python-dateutil==2.7.3
 python-debian==0.1.35
 python-pam==1.8.4
