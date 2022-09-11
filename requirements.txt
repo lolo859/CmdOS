@@ -108,7 +108,6 @@ pycups==1.9.73
 pycurl==7.43.0.2
 pydub==0.25.1
 pyflakes==2.0.0
-pygame==1.9.4.post1
 PyGithub==1.55
 Pygments==2.3.1
 PyGObject==3.30.4
