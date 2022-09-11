@@ -20,7 +20,6 @@ colorama==0.3.7
 colorzero==1.1
 cookies==2.2.1
 cPython==0.0.6
-cupshelpers==1.0
 cycler==0.10.0
 Cython==0.29.28
 decorator==4.3.0
