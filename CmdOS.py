@@ -41,7 +41,8 @@ app={"random":"0",
      "image":"0",
      "browser":"0",
      "print":"0",
-     "maths":"0"}
+     "maths":"0",
+     "download":"0"}
 def appinitext():
     if not os.path.exists("/home/pi/Documents/CmdOS/random.txt"):
         randomtext=open("random.txt","w")
@@ -122,8 +123,17 @@ def appinitext():
         data=mathstext.readlines()
         app.update({"maths":str(data[0])})
         mathstext.close()
+    if not os.path.exists("download.txt"):
+        downloadtext=open("download.txt","w")
+        downloadtext.write(app["download"])
+        downloadtext.close()
+    else:
+        downloadtext=open("download.txt",'r')
+        data=downloadtext.readlines()
+        app.update({"download":str(data[0])})
+        downloadtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.17 - Basé en Python",
+info={"sys":"Cmd OS v1.18 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -131,7 +141,8 @@ info={"sys":"Cmd OS v1.17 - Basé en Python",
       "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module PIL",
       "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module browser",
       "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module termcolor",
-      "maths":"Module Maths""\nVersion : 1.0""\nAuteur : système"} 
+      "maths":"Module Maths""\nVersion : 1.1""\nAuteur : système",
+      "download":"Module Download""\nVersion : 1.0""\nAuteur : système""\nNote : basé sur le module request"} 
 adresse=os.path.realpath(__file__)
 adresse=os.path.dirname(adresse)
 if not os.path.exists(adresse)==True:
@@ -150,15 +161,15 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.17""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.18""","green",attrs=["bold"])) 
 def cmd():
     global adresse,mdpt,app,mdptext,repmdp,admin
     log=["Voici les logs :"]
     charginstall=1
     displaysplit=0
-    store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
+    store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.17"
+        version="1.18"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -233,6 +244,31 @@ def cmd():
                     trimmed=id[:random.randint(0,len(id)-1)]
                     spaces=" " * random.randint(0,15)
                     print(f"{spaces}{trimmed}")
+            else:
+                print(colored("Ce module n'est pas installé ou n'existe pas","red",attrs=["bold"]))
+        elif rep.startswith("download"):
+            download=rep.split()
+            if displaysplit==1:
+                print(download)
+            if app["download"]=="1":
+                if len(download)==3:
+                    urldown=download[1]
+                    lentxt=len(download[2])-5
+                    txtname=download[2]
+                    if txtname[lentxt::]==".html":
+                        try:
+                            txtcontent=req.get(urldown,allow_redirects=True)
+                            open(txtname,"wb").write(txtcontent.content)
+                            txtfile=open(txtname,"r")
+                            txtlist=txtfile.readlines()
+                            txtfile.close()
+                            print(colored(("La page web a bien été enregistré sous le nom "+txtname),"blue",attrs=["bold"]))
+                        except req.exceptions.MissingSchema:
+                            print(colored("La page web n'existe pas","yellow",attrs=["bold"]))
+                    else:
+                        print(colored("Le nom de fichier doit terminé par '.html'","red",attrs=["bold"]))
+                else:
+                    print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
             else:
                 print(colored("Ce module n'est pas installé ou n'existe pas","red",attrs=["bold"]))
         elif rep.startswith("del"):
@@ -346,6 +382,10 @@ def cmd():
                     appt=open("maths.txt","w")
                     appt.write(app.get("maths"))
                     appt.close()
+                if install=="download":
+                    appt=open("download.txt","w")
+                    appt.write(app.get("download"))
+                    appt.close()
             else:
                 print(colored("L'app que vous essayez d'installer n'existe pas","red",attrs=["bold"]))
         elif rep.startswith("random"):
@@ -441,6 +481,10 @@ def cmd():
                     if uninstall=="maths":
                         appt=open("maths.txt","w")
                         appt.write(str(app.get("maths")))
+                        appt.close()
+                    if uninstall=="download":
+                        appt=open("download.txt","w")
+                        appt.write(str(app.get("download")))
                         appt.close()
                 else:
                     print(colored("L'app que vous essayez de désinstaller n'est pas installée","yellow",attrs=["bold"]))
@@ -624,6 +668,10 @@ def cmd():
                 print(colored("Le module maths est installé","blue",attrs=["bold"]))
             else:
                 print(colored("Le module maths n'est pas installé","blue",attrs=["bold"]))
+            if app.get("download")=="1":
+                print(colored("Le module download est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module download n'est pas installé","blue",attrs=["bold"]))
         elif rep=="clear":
             os.system("clear")
         elif rep.startswith("maths"):
@@ -632,7 +680,7 @@ def cmd():
                 if displaysplit==1:
                     print(maths1)
                 if len(maths1)==4:
-                    op=["+","-","*","/","%"]
+                    op=["+","-","*","/","%","p"]
                     op1=maths1[2]
                     if op1 in op:
                         try:
@@ -653,6 +701,9 @@ def cmd():
                             if op1=="%":
                                 result=terme1%terme2
                                 print(terme1,op1,terme2,"=",result)
+                            if op1=="p":
+                                result=pow(terme1,terme2)
+                                print(result)
                         except:
                             print(colored("L'un des termes/facteurs n'est pas valide","red",attrs=["bold"]))
                     else:
@@ -736,6 +787,8 @@ def login():
         print("Taper",colored("shutdown",attrs=["bold"]),"pour éteindre")
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
+            os.system("clear")
+            print(colored("""Cmd OS v1.18""","green",attrs=["bold"])) 
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
             cmd()
             return
