@@ -15,6 +15,8 @@ import requests as req
 import time
 import cmd_fonction as cmdf
 from datetime import datetime
+from ftplib import FTP
+import uuid
 os.system("clear")
 ####################################################################
 #Dico commande and app plus chargement
@@ -133,7 +135,8 @@ def appinitext():
         app.update({"download":str(data[0])})
         downloadtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.18 - Basé en Python",
+info={"sys":"Cmd OS v1.19 - Basé en Python",
+      "system":"Cmd OS v1.19 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -161,15 +164,22 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.18""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.19""","green",attrs=["bold"])) 
+host="ftp-cmdos.alwaysdata.net"
+user="cmdos"
+password="CmdOS2008)"
+connect=FTP(host,user,password)
+connect.sendcmd('CWD www')
+connect.sendcmd("CWD command")
 def cmd():
     global adresse,mdpt,app,mdptext,repmdp,admin
     log=["Voici les logs :"]
     charginstall=1
     displaysplit=0
+    logserver=1
     store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.18"
+        version="1.19"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -189,11 +199,31 @@ def cmd():
             demande=colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+" "+colored(adresse,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
         if admin==1:
-            heure=datetime.now().time()
-            log.append(colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
+            heure=str(datetime.now())
+            if logserver==1:
+                id=str(uuid.uuid4())
+                contenttxt=open("content.txt","w")
+                contenttxt.write(getpass.getuser()+"(admin) "+heure+" "+rep)
+                contenttxt.close()
+                contenttxt=open("content.txt","rb")
+                connect.storbinary("STOR "+id,contenttxt)
+                contenttxt.close()
+                log.append(id+" "+colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
+            else:
+                log.append(colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
         else:
-            heure=datetime.now().time()
-            log.append(colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
+            heure=str(datetime.now())
+            if logserver==1:
+                id=str(uuid.uuid4())
+                contenttxt=open("content.txt","w")
+                contenttxt.write(getpass.getuser()+" "+heure+" "+rep)
+                contenttxt.close()
+                contenttxt=open("content.txt","rb")
+                connect.storbinary("STOR "+id,contenttxt)
+                contenttxt.close()
+                log.append(id+" "+colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
+            else:
+                log.append(colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
         if rep in com:
             print(com[rep])
         elif rep=="store":
@@ -716,8 +746,8 @@ def cmd():
             if admin==1:
                 print(colored("Le godmode est un ensemble de fonctions et de paramètres conçus pour les dévéloppeurs, n'y toucher seulement si vous savez ce que vous faites","yellow",attrs=["bold"]))
                 godmode1=input(colored("Quelle fonction voulez vous activer/utilisez ? : ","blue",attrs=["bold"]))
-                if godmode1=="sys.report":
-                    print("Le report permet d'afficher la valeur des variables systèmes")
+                if godmode1=="sys.variables":
+                    print("Cette fonction permet d'afficher la valeur des variables systèmes")
                     input("Taper entrer pour exécuter")
                     print("mdpt='"+mdpt+"'")
                     print("app='"+str(app)+"'")
@@ -760,6 +790,15 @@ def cmd():
                         displaysplit=int(godmode3)
                     else:
                         print("La valeur entrée n'est pas correcte")
+                if godmode1=="sys.report":
+                    print("Cette fonction permet d'activer/désactiver l'enregistrement des commandes sur le serveur de support")
+                    input("Taper entrer pour exécuter")
+                    report="Entrer votre choix (valeur actuelle : "+str(logserver)+") : "
+                    godmode4=input(report)
+                    if int(godmode4)==1 or int(godmode4)==0 :
+                        logserver=int(godmode4)
+                    else:
+                        print("La valeur entrée n'est pas correcte")
             else:
                 print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser le godmode","red",attrs=["bold"]))
         elif rep.startswith("log"):
@@ -796,6 +835,7 @@ def login():
             return
         else:
             print("Le mot de passe est incorrect")
+            os.system("clear")
     else:
         print("""Taper "help" pour plus d'information""")
         cmd()
@@ -803,3 +843,4 @@ def login():
 while True :
     login()
     break
+connect.quit()
