@@ -17,6 +17,8 @@ import cmd_fonction as cmdf
 from datetime import datetime
 from ftplib import FTP
 import uuid
+import subprocess
+import sys
 os.system("clear")
 ####################################################################
 #Dico commande and app plus chargement
@@ -35,7 +37,8 @@ com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la list
      "\nadmin - active ou désactive le mode admin"
      "\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"
      "\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"
-     "\nshell (version raccourci : sh) - ouvre le cmd"}
+     "\nshell (version raccourci : sh) - ouvre le cmd"
+     "\nexecute - permet d'éxécuter des fonctions exterieures au système"}
 app={"random":"0",
      "time":"0",
      "music":"0",
@@ -135,8 +138,8 @@ def appinitext():
         app.update({"download":str(data[0])})
         downloadtext.close()
 appinitext()
-info={"sys":"Cmd OS v1.19 - Basé en Python",
-      "system":"Cmd OS v1.19 - Basé en Python",
+info={"sys":"Cmd OS v1.20 - Basé en Python",
+      "system":"Cmd OS v1.20 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -164,7 +167,7 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.19""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.20""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -179,7 +182,7 @@ def cmd():
     logserver=1
     store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.19"
+        version="1.20"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -418,6 +421,15 @@ def cmd():
                     appt.close()
             else:
                 print(colored("L'app que vous essayez d'installer n'existe pas","red",attrs=["bold"]))
+        elif rep.startswith("execute"):
+            impor=rep.split()
+            if displaysplit==1:
+                print(impor)
+            if len(impor)==4:
+                command="from app."+impor[1]+" import *\ntry:\n    "+impor[2]+"()\nexcept ModuleNotFoundError or NameError:\n    pass"
+                subprocess.run([sys.executable, "-c",command])
+            else:
+                print(colored("La commande est mal formulée","red",attrs=["bold"]))
         elif rep.startswith("random"):
             if app.get("random")=="1":
                     error=0
@@ -827,7 +839,7 @@ def login():
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
             os.system("clear")
-            print(colored("""Cmd OS v1.18""","green",attrs=["bold"])) 
+            print(colored("""Cmd OS v1.20""","green",attrs=["bold"])) 
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
             cmd()
             return
@@ -844,3 +856,4 @@ while True :
     login()
     break
 connect.quit()
+os.system("clear")
