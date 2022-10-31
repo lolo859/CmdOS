@@ -425,7 +425,7 @@ def cmd():
             impor=rep.split()
             if displaysplit==1:
                 print(impor)
-            if len(impor)==4:
+            if len(impor)==3:
                 command="from app."+impor[1]+" import *\ntry:\n    "+impor[2]+"()\nexcept ModuleNotFoundError or NameError:\n    pass"
                 subprocess.run([sys.executable, "-c",command])
             else:
