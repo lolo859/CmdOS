@@ -47,7 +47,8 @@ app={"random":"0",
      "browser":"0",
      "print":"0",
      "maths":"0",
-     "download":"0"}
+     "download":"0",
+     "prompt":"0"}
 def appinitext():
     if not os.path.exists("/home/pi/Documents/CmdOS/random.txt"):
         randomtext=open("random.txt","w")
@@ -137,9 +138,18 @@ def appinitext():
         data=downloadtext.readlines()
         app.update({"download":str(data[0])})
         downloadtext.close()
+    if not os.path.exists("prompt.txt"):
+        prompttext=open("prompt.txt","w")
+        prompttext.write(app["prompt"])
+        prompttext.close()
+    else:
+        prompttext=open("prompt.txt",'r')
+        data=prompttext.readlines()
+        app.update({"prompt":str(data[0])})
+        prompttext.close()
 appinitext()
-info={"sys":"Cmd OS v1.20 - Basé en Python",
-      "system":"Cmd OS v1.20 - Basé en Python",
+info={"sys":"Cmd OS v1.21 - Basé en Python",
+      "system":"Cmd OS v1.21 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
       "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
@@ -148,7 +158,8 @@ info={"sys":"Cmd OS v1.20 - Basé en Python",
       "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module browser",
       "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module termcolor",
       "maths":"Module Maths""\nVersion : 1.1""\nAuteur : système",
-      "download":"Module Download""\nVersion : 1.0""\nAuteur : système""\nNote : basé sur le module request"} 
+      "download":"Module Download""\nVersion : 1.0""\nAuteur : système""\nNote : basé sur le module request",
+      "prompt":"Module Prompt""\nVersion : 1.0""\nAuteur : système"} 
 adresse=os.path.realpath(__file__)
 adresse=os.path.dirname(adresse)
 if not os.path.exists(adresse)==True:
@@ -167,7 +178,7 @@ else:
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.20""","green",attrs=["bold"])) 
+print(colored("""Cmd OS v1.21""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -180,9 +191,9 @@ def cmd():
     charginstall=1
     displaysplit=0
     logserver=1
-    store="store"+"Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
+    store="Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.20"
+        version="1.21"
         if app["random"]=="1":
             import random
         if app["time"]=="1":
@@ -269,7 +280,7 @@ def cmd():
                     print(colored("La commande est mal formulée","red",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
-        elif rep=="uuid":
+        elif rep.startswith("uuid"):
             if app.get("uuid")=="1":
                 uuid.uuid4()
                 while True:
@@ -278,7 +289,7 @@ def cmd():
                     spaces=" " * random.randint(0,15)
                     print(f"{spaces}{trimmed}")
             else:
-                print(colored("Ce module n'est pas installé ou n'existe pas","red",attrs=["bold"]))
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
         elif rep.startswith("download"):
             download=rep.split()
             if displaysplit==1:
@@ -303,7 +314,7 @@ def cmd():
                 else:
                     print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
             else:
-                print(colored("Ce module n'est pas installé ou n'existe pas","red",attrs=["bold"]))
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
         elif rep.startswith("del"):
             supr=rep.split()
             if displaysplit==1:
@@ -419,6 +430,10 @@ def cmd():
                     appt=open("download.txt","w")
                     appt.write(app.get("download"))
                     appt.close()
+                if install=="prompt":
+                    appt=open("prompt.txt","w")
+                    appt.write(app.get("prompt"))
+                    appt.close()
             else:
                 print(colored("L'app que vous essayez d'installer n'existe pas","red",attrs=["bold"]))
         elif rep.startswith("execute"):
@@ -527,6 +542,10 @@ def cmd():
                     if uninstall=="download":
                         appt=open("download.txt","w")
                         appt.write(str(app.get("download")))
+                        appt.close()
+                    if uninstall=="prompt":
+                        appt=open("prompt.txt","w")
+                        appt.write(str(app.get("prompt")))
                         appt.close()
                 else:
                     print(colored("L'app que vous essayez de désinstaller n'est pas installée","yellow",attrs=["bold"]))
@@ -677,6 +696,17 @@ def cmd():
                     print(colored("La commande est mal formulée","red",attrs=["bold"]))
             else:
                 print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("prompt"):
+            if app["prompt"]=="1":
+                prompt=rep.split()
+                if displaysplit==1:
+                    print(prompt)
+                if len(prompt)==1:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+                else:
+                    os.system(rep[7::])
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
         elif rep=="store list":
             if app.get("random")=="1":
                 print(colored("Le module random est installé","blue",attrs=["bold"]))
@@ -714,6 +744,10 @@ def cmd():
                 print(colored("Le module download est installé","blue",attrs=["bold"]))
             else:
                 print(colored("Le module download n'est pas installé","blue",attrs=["bold"]))
+            if app.get("prompt")=="1":
+                print(colored("Le module prompt est installé","blue",attrs=["bold"]))
+            else:
+                print(colored("Le module prompt n'est pas installé","blue",attrs=["bold"]))
         elif rep=="clear":
             os.system("clear")
         elif rep.startswith("maths"):
@@ -839,7 +873,7 @@ def login():
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
             os.system("clear")
-            print(colored("""Cmd OS v1.20""","green",attrs=["bold"])) 
+            print(colored("""Cmd OS v1.21""","green",attrs=["bold"])) 
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
             cmd()
             return
