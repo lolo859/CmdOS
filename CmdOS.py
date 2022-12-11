@@ -1,33 +1,36 @@
 #####################################################################
-#Import
+#Import et clear
 ####################################################################
 from genericpath import exists
-#from msvcrt import open_osfhandle
 from os import listdir
 from os.path import isfile, join
 import os.path
 import os
 from random import random
-from xml.sax.xmlreader import AttributesImpl
+#from xml.sax.xmlreader import AttributesImpl
 from termcolor import colored
 import getpass
 import requests as req
-import time
 import cmd_fonction as cmdf
 from datetime import datetime
 from ftplib import FTP
 import uuid
 import subprocess
 import sys
+import webbrowser
+import secure_id
 os.system("clear")
-####################################################################
-#Dico commande and app plus chargement
-####################################################################
-admin=0
+#########################################################################
+#Admin, commande et chargement
+#########################################################################
+if (len(sys.argv)==2 and sys.argv[1]=="admin") or (len(sys.argv)==1 and sys.argv[0]=="admin"):
+    admin=1
+else:
+    admin=0
 cmdf.charg()
 mdpt="6"
 com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes"
-     "\ninfo - Afficher les infos sur un programme / Utliser sys pour voir la version du système"
+     "\ninfo - Afficher les infos sur un programme / utliser sys pour voir la version du système / utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"
      "\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"
      "\ncd - changer de dossier""\ndir - permet de voir les fichiers/dossiers"
      "\nopendir - ouvrir un dossier"
@@ -39,6 +42,9 @@ com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la list
      "\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"
      "\nshell (version raccourci : sh) - ouvre le cmd"
      "\nexecute - permet d'éxécuter des fonctions exterieures au système"}
+############################################
+#App
+############################################
 app={"random":"0",
      "time":"0",
      "music":"0",
@@ -49,143 +55,170 @@ app={"random":"0",
      "maths":"0",
      "download":"0",
      "prompt":"0"}
+############################################
+#Import app depuis txt
+############################################
 def appinitext():
-    if not os.path.exists("/home/pi/Documents/CmdOS/random.txt"):
-        randomtext=open("random.txt","w")
+    if not os.path.exists("save_txt/random.txt"):
+        randomtext=open("save_txt/random.txt","w")
         randomtext.write(app["random"])
         randomtext.close()
     else:
-        import random
-        randomtext=open("random.txt",'r')
+        import module.random
+        randomtext=open("save_txt/random.txt",'r')
         data=randomtext.readlines()
         app.update({"random":str(data[0])})
         randomtext.close()
-    if not os.path.exists("/home/pi/Documents/CmdOS/time.txt"):
-        timetext=open("time.txt","w")
+    if not os.path.exists("save_txt/time.txt"):
+        timetext=open("save_txt/time.txt","w")
         timetext.write(app["time"])
         timetext.close()
     else:
-        import time
-        timetext=open("time.txt",'r')
+        import module.time
+        timetext=open("save_txt/time.txt",'r')
         data=timetext.readlines()
         app.update({"time":str(data[0])})
         timetext.close()
-    if not os.path.exists("/home/pi/Documents/CmdOS/music.txt"):
-        musictext=open("music.txt","w")
+    if not os.path.exists("save_txt/music.txt"):
+        musictext=open("save_txt/music.txt","w")
         musictext.write(app["music"])
         musictext.close()
     else:
-        import simpleaudio as sa
-        musictext=open("music.txt",'r')
+        import module.music
+        musictext=open("save_txt/music.txt",'r')
         data=musictext.readlines()
         app.update({"music":str(data[0])})
         musictext.close()
-    if not os.path.exists("uuid.txt"):
-        uuidtext=open("uuid.txt","w")
+    if not os.path.exists("save_txt/uuid.txt"):
+        uuidtext=open("save_txt/uuid.txt","w")
         uuidtext.write(app["uuid"])
         uuidtext.close()
     else:
-        import uuid
-        import random
-        uuidtext=open("uuid.txt",'r')
+        import module.uuid
+        uuidtext=open("save_txt/uuid.txt",'r')
         data=uuidtext.readlines()
         app.update({"uuid":str(data[0])})
         uuidtext.close()
-    if not os.path.exists("image.txt"):
-        imagetext=open("image.txt","w")
+    if not os.path.exists("save_txt/image.txt"):
+        imagetext=open("save_txt/image.txt","w")
         imagetext.write(app["image"])
         imagetext.close()
     else:
-        from PIL import Image
-        imagetext=open("image.txt",'r')
+        import module.image
+        imagetext=open("save_txt/image.txt",'r')
         data=imagetext.readlines()
         app.update({"image":str(data[0])})
         imagetext.close()
-    if not os.path.exists("browser.txt"):
-        browsertext=open("browser.txt","w")
+    if not os.path.exists("save_txt/browser.txt"):
+        browsertext=open("save_txt/browser.txt","w")
         browsertext.write(app["browser"])
         browsertext.close()
     else:
-        import webbrowser
-        browsertext=open("browser.txt",'r')
+        import module.browser
+        browsertext=open("save_txt/browser.txt",'r')
         data=browsertext.readlines()
         app.update({"browser":str(data[0])})
         browsertext.close()
-    if not os.path.exists("print.txt"):
-        printtext=open("print.txt","w")
+    if not os.path.exists("save_txt/print.txt"):
+        printtext=open("save_txt/print.txt","w")
         printtext.write(app["print"])
         printtext.close()
     else:
-        printtext=open("print.txt",'r')
+        import module.print
+        printtext=open("save_txt/print.txt",'r')
         data=printtext.readlines()
         app.update({"print":str(data[0])})
         printtext.close()
-    if not os.path.exists("maths.txt"):
-        mathstext=open("maths.txt","w")
+    if not os.path.exists("save_txt/maths.txt"):
+        mathstext=open("save_txt/maths.txt","w")
         mathstext.write(app["maths"])
         mathstext.close()
     else:
-        mathstext=open("maths.txt",'r')
+        import module.maths
+        mathstext=open("save_txt/maths.txt",'r')
         data=mathstext.readlines()
         app.update({"maths":str(data[0])})
         mathstext.close()
-    if not os.path.exists("download.txt"):
-        downloadtext=open("download.txt","w")
+    if not os.path.exists("save_txt/download.txt"):
+        downloadtext=open("save_txt/download.txt","w")
         downloadtext.write(app["download"])
         downloadtext.close()
     else:
-        downloadtext=open("download.txt",'r')
+        import module.download
+        downloadtext=open("save_txt/download.txt",'r')
         data=downloadtext.readlines()
         app.update({"download":str(data[0])})
         downloadtext.close()
-    if not os.path.exists("prompt.txt"):
-        prompttext=open("prompt.txt","w")
+    if not os.path.exists("save_txt/prompt.txt"):
+        prompttext=open("save_txt/prompt.txt","w")
         prompttext.write(app["prompt"])
         prompttext.close()
     else:
-        prompttext=open("prompt.txt",'r')
+        import module.prompt
+        prompttext=open("save_txt/prompt.txt",'r')
         data=prompttext.readlines()
         app.update({"prompt":str(data[0])})
         prompttext.close()
 appinitext()
-info={"sys":"Cmd OS v1.21 - Basé en Python",
-      "system":"Cmd OS v1.21 - Basé en Python",
-      "time":"Module Time""\nVersion : 1.0""\nAuteur : système",
-      "random":"Module Random""\nVersion : 1.1""\nAuteur : système",
-      "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nNote : basé avec le module simpleaudio",
-      "uuid":"Module Uuid""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module uuid4",
-      "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module PIL",
-      "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module browser",
-      "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nNote : basé avec le module termcolor",
-      "maths":"Module Maths""\nVersion : 1.1""\nAuteur : système",
-      "download":"Module Download""\nVersion : 1.0""\nAuteur : système""\nNote : basé sur le module request",
-      "prompt":"Module Prompt""\nVersion : 1.0""\nAuteur : système"} 
+############################################
+#Info
+############################################
+info={"sys":"Cmd OS v2.0 - Basé en Python",
+      "system":"Cmd OS v2.0 - Basé en Python",
+      "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
+      "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
+      "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
+      "uuid":"Module Uuid""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module uuid4",
+      "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module PIL",
+      "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module browser",
+      "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module termcolor",
+      "maths":"Module Maths""\nVersion : 1.1""\nPermission : displaysplit, rep""\nAuteur : système",
+      "download":"Module Download""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé sur le module request",
+      "prompt":"Module Prompt""\nVersion : 1.0""\nPermission : displaysplit, rep""\nAuteur : système"}
+############################################
+#Adresse
+############################################
 adresse=os.path.realpath(__file__)
 adresse=os.path.dirname(adresse)
+############################################
+#Vérification
+############################################
 if not os.path.exists(adresse)==True:
     while not os.path.exists(adresse)==True:
         adresse=input("Le système n'a pas démmarrer correctement, veulliez rentrer le chemin absolu du dossier ou se trouve le fichier CmdOS.py : ")
-if not(os.path.exists(adresse+"/image") and os.path.exists(adresse+"/music") and os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/gif") and os.path.exists(adresse+"/__pycache__")):
+if not(os.path.exists(adresse+"/image") and os.path.exists(adresse+"/music") and os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/gif") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/app") and os.path.exists(adresse+"/save_txt")):
     print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe: image, music, __pycache__, gif et README.md.","red",attrs=["bold"]))
     quit()
-if not os.path.exists(adresse+"/mdp.txt"):
-    mdptext=open("mdp.txt","w")
+############################################
+#Mot de passe
+############################################
+if not os.path.exists(adresse+"/save_txt/mdp.txt"):
+    mdptext=open("save_txt/mdp.txt","w")
     mdptext.write(mdpt)
     mdptext.close()
 else:
-    mdptext=open("mdp.txt",'r')
+    mdptext=open("save_txt/mdp.txt",'r')
     data=mdptext.readlines()
     mdpt=data[0]
     mdptext.close()
 repmdp=""
-print(colored("""Cmd OS v1.21""","green",attrs=["bold"])) 
+############################################
+#Connexion
+############################################
+print(colored("""Cmd OS v2.0""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
 connect=FTP(host,user,password)
 connect.sendcmd('CWD www')
 connect.sendcmd("CWD command")
+##########################
+#Fonction Cmd
+##########################
 def cmd():
+#################################
+#Variable, module
+#################################
     global adresse,mdpt,app,mdptext,repmdp,admin
     log=["Voici les logs :"]
     charginstall=1
@@ -193,31 +226,44 @@ def cmd():
     logserver=1
     store="Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="1.21"
+        version="2.0"
         if app["random"]=="1":
-            import random
+            import module.random
         if app["time"]=="1":
-            import time
+            import module.time
         if app["music"]=="1":
-            import simpleaudio as sa
+            import module.music
         if app["uuid"]=="1":
-            import random
-            import uuid
+            import module.uuid
         if app["image"]=="1":
-            from PIL import Image
+            import module.image
         if app["browser"]=="1":
-            import webbrowser
+            import module.browser
+        if app["print"]=="1":
+            import module.print
+        if app["maths"]=="1":
+            import module.maths
+        if app["download"]=="1":
+            import module.download
+        if app["prompt"]=="1":
+            import module.prompt
+#################################
+#Gestion entrée utilisateur
+#################################
         if admin==0:
             demande=colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(adresse,"blue",attrs=["bold"])+" >>> "
         else:
             demande=colored(getpass.getuser(),"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+" "+colored(adresse,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
+#################################
+#Ajout de commande a log
+#################################
         if admin==1:
             heure=str(datetime.now())
             if logserver==1:
-                id=str(uuid.uuid4())
+                id=str(secure_id.sid2())
                 contenttxt=open("content.txt","w")
-                contenttxt.write(getpass.getuser()+"(admin) "+heure+" "+rep)
+                contenttxt.write(getpass.getuser()+"(admin) "+heure+" "+version+" "+rep)
                 contenttxt.close()
                 contenttxt=open("content.txt","rb")
                 connect.storbinary("STOR "+id,contenttxt)
@@ -228,9 +274,9 @@ def cmd():
         else:
             heure=str(datetime.now())
             if logserver==1:
-                id=str(uuid.uuid4())
+                id=str(secure_id.sid2())
                 contenttxt=open("content.txt","w")
-                contenttxt.write(getpass.getuser()+" "+heure+" "+rep)
+                contenttxt.write(getpass.getuser()+" "+heure+" "+version+" "+rep)
                 contenttxt.close()
                 contenttxt=open("content.txt","rb")
                 connect.storbinary("STOR "+id,contenttxt)
@@ -240,8 +286,14 @@ def cmd():
                 log.append(colored(getpass.getuser(),"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
         if rep in com:
             print(com[rep])
+#################################
+#Store
+#################################
         elif rep=="store":
             print(store)
+#################################
+#Detail
+#################################
         elif rep.startswith("detail"):
             detail1=rep.split()
             if displaysplit==1:
@@ -256,6 +308,9 @@ def cmd():
                     print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée",'red',attrs=["bold"]))
+#################################
+#Admin
+#################################
         elif rep.startswith("admin"):
             admin1=rep.split()
             if displaysplit==1:
@@ -280,41 +335,9 @@ def cmd():
                     print(colored("La commande est mal formulée","red",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
-        elif rep.startswith("uuid"):
-            if app.get("uuid")=="1":
-                uuid.uuid4()
-                while True:
-                    id=str(uuid.uuid4())
-                    trimmed=id[:random.randint(0,len(id)-1)]
-                    spaces=" " * random.randint(0,15)
-                    print(f"{spaces}{trimmed}")
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
-        elif rep.startswith("download"):
-            download=rep.split()
-            if displaysplit==1:
-                print(download)
-            if app["download"]=="1":
-                if len(download)==3:
-                    urldown=download[1]
-                    lentxt=len(download[2])-5
-                    txtname=download[2]
-                    if txtname[lentxt::]==".html":
-                        try:
-                            txtcontent=req.get(urldown,allow_redirects=True)
-                            open(txtname,"wb").write(txtcontent.content)
-                            txtfile=open(txtname,"r")
-                            txtlist=txtfile.readlines()
-                            txtfile.close()
-                            print(colored(("La page web a bien été enregistré sous le nom "+txtname),"blue",attrs=["bold"]))
-                        except req.exceptions.MissingSchema:
-                            print(colored("La page web n'existe pas","yellow",attrs=["bold"]))
-                    else:
-                        print(colored("Le nom de fichier doit terminé par '.html'","red",attrs=["bold"]))
-                else:
-                    print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+#################################
+#Supprimer
+#################################
         elif rep.startswith("del"):
             supr=rep.split()
             if displaysplit==1:
@@ -328,6 +351,9 @@ def cmd():
                     print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
             else:
                 print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
+#################################
+#Ouvrir un dossier
+#################################
         elif rep.startswith("opendir"):
             opendir=rep.split()
             if displaysplit==1:
@@ -346,6 +372,9 @@ def cmd():
                     print(colored("La commande est mal formulée","red",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
+#################################
+#Renommer
+#################################
         elif rep.startswith("ren"):
             ren=rep[4::]
             if displaysplit==1:
@@ -357,6 +386,9 @@ def cmd():
                 os.rename(ren2, ren3)
             else:
                 print(colored("Le fichier/dossier n'existe pas","yellow",attrs=["bold"]))
+#################################
+#Cd : change directory
+#################################
         elif rep.startswith("cd"):
             cd=rep.split()
             if displaysplit==1:
@@ -373,12 +405,39 @@ def cmd():
                     print(colored("Le dossier n'est pas valide","yellow",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
+#################################
+#Dir : directory
+#################################
         elif rep=="dir":
             fichiers = os.listdir(adresse)
             longueur=len(fichiers)
             print("Voici les fichiers/dossiers dans ce dossier :")
             for element in range(longueur):
                 print(" ",fichiers[element])
+#################################
+#Logs
+#################################
+        elif rep.startswith("log"):
+            if admin==1:
+                log1=rep.split()
+                if displaysplit==1:
+                    print(log1)
+                if len(log1)==2 and type(log1[1])==str:
+                    if log1[1]=="show":
+                        for lettre in log:
+                            print(lettre)
+                    elif log1[1]=="delete":
+                        log=["Voici les logs :"]
+                        print(colored("Les logs ont bien été supprimé","blue",attrs=["bold"]))
+                    else:
+                        print(colored("La commande est mal formulée","red",attrs=["bold"]))
+                else:
+                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+            else:
+                print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser cette commande","red",attrs=["bold"]))
+#################################
+#Store install
+#################################
         elif rep.startswith("store install "):
             install=rep[14::]
             if install in app: 
@@ -388,54 +447,60 @@ def cmd():
                 install2=colored("Le module ","blue",attrs=["bold"])+colored(install,"blue",attrs=["bold","underline"])+colored(" a bien été installé","blue",attrs=["bold"])
                 print(install2)
                 if install=="random":
-                    import random
-                    appt=open("random.txt","w")
+                    import module.random
+                    appt=open("save_txt/random.txt","w")
                     appt.write(app.get("random"))
                     appt.close()
                 if install=="time":
-                    import time
-                    appt=open("time.txt","w")
+                    import module.time
+                    appt=open("save_txt/time.txt","w")
                     appt.write(app.get("time"))
                     appt.close()
                 if install=="music":
-                    import simpleaudio as sa
-                    appt=open("music.txt","w")
+                    import module.music
+                    appt=open("save_txt/music.txt","w")
                     appt.write(app.get("music"))
                     appt.close()
                 if install=="uuid":
-                    import uuid
-                    import random
-                    appt=open("uuid.txt","w")
+                    import module.uuid
+                    appt=open("save_txt/uuid.txt","w")
                     appt.write(app.get("uuid"))
                     appt.close()
                 if install=="image":
-                    from PIL import Image
-                    appt=open("image.txt","w")
+                    import module.image
+                    appt=open("save_txt/image.txt","w")
                     appt.write(app.get("image"))
                     appt.close()
                 if install=="browser":
-                    import webbrowser
-                    appt=open("browser.txt","w")
+                    import module.browser
+                    appt=open("save_txt/browser.txt","w")
                     appt.write(app.get("browser"))
                     appt.close()
                 if install=="print":
-                    appt=open("print.txt","w")
+                    import module.print
+                    appt=open("save_txt/print.txt","w")
                     appt.write(app.get("print"))
                     appt.close()
                 if install=="maths":
-                    appt=open("maths.txt","w")
+                    import module.maths
+                    appt=open("save_txt/maths.txt","w")
                     appt.write(app.get("maths"))
                     appt.close()
                 if install=="download":
-                    appt=open("download.txt","w")
+                    import module.download
+                    appt=open("save_txt/download.txt","w")
                     appt.write(app.get("download"))
                     appt.close()
                 if install=="prompt":
-                    appt=open("prompt.txt","w")
+                    import module.prompt
+                    appt=open("save_txt/prompt.txt","w")
                     appt.write(app.get("prompt"))
                     appt.close()
             else:
-                print(colored("L'app que vous essayez d'installer n'existe pas","red",attrs=["bold"]))
+                print(colored("Le module que vous essayez d'installer n'existe pas","red",attrs=["bold"]))
+#################################
+#Execute
+#################################
         elif rep.startswith("execute"):
             impor=rep.split()
             if displaysplit==1:
@@ -445,61 +510,31 @@ def cmd():
                 subprocess.run([sys.executable, "-c",command])
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
-        elif rep.startswith("random"):
-            if app.get("random")=="1":
-                    error=0
-                    aleatoire=rep.split()
-                    if displaysplit==1:
-                        print(aleatoire)
-                    try:
-                        aleatoire[1]=int(aleatoire[1])
-                        aleatoire[2]=int(aleatoire[2])
-                    except:
-                        print(colored("La commande n'accepte que des nombres","yellow",attrs=["bold"]))
-                        error=1
-                    if len(aleatoire)==3 and type(aleatoire[1])==int and type(aleatoire[2]==int):
-                        random_1=aleatoire[1]
-                        random_2=aleatoire[2]
-                        print("Le nombre est",random.randint(random_1,random_2))
-                    else:
-                        if error==0:
-                            print(colored("La commande est mal formulée","red",attrs=["bold"]))
-                    error=0
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
-        elif rep.startswith("time"):
-            if app.get("time")=="1":
-                    error=0
-                    temps=rep.split()
-                    if displaysplit==1:
-                        print(temps)
-                    try:
-                        temps[1]=float(temps[1])
-                    except:
-                        print(colored("Le module time n'accepte que des nombres","red",attrs=["bold"]))
-                        error=1
-                    if len(temps)==2 and type(temps[1])==float:
-                        temps_1=temps[1]
-                        time.sleep(temps_1)
-                    else:
-                        if error==0:
-                            print(colored("La commande est mal formulée","red",attrs=["bold"]))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
-            error=0
+#################################
+#Shell
+#################################
         elif rep=="shutdown" or rep=="sh" or rep=="shell":
             break
+#################################
+#Info
+#################################
         elif rep.startswith("info"):
             info_command=rep.split()
             if displaysplit==1:
                 print(info_command)
-            if len(info_command)==2:
+            if len(info_command)==2 or len(info_command)==3:
                 if info_command[1] in info:
                     print(info[info_command[1]])
+                elif info_command[1]=="app" and len(info_command)==3:
+                    command="from termcolor import colored\ntry:\n    import app."+info_command[2]+"\n    print(app."+info_command[2]+""".__annotations__)\nexcept ModuleNotFoundError or NameError:\n    print(colored("L'app indiquée n'existe pas","yellow",attrs=["bold"]))"""
+                    subprocess.run([sys.executable, "-c",command])
                 else:
-                    print(colored("Le module n'existe pas","yellow",attrs=["bold"]))
+                    print(colored("Le module/app n'existe pas","yellow",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulé","red",attrs=["bold"]))
+#################################
+#Store uninstall
+#################################
         elif rep.startswith("store uninstall "):
             uninstall=rep[16::]
             if uninstall in app:
@@ -508,110 +543,59 @@ def cmd():
                     uninstall1=colored("Le module ","blue",attrs=["bold"])+colored(uninstall,"blue",attrs=["bold","underline"])+colored(" a bien été desinstallé","blue",attrs=["bold"])
                     print(uninstall1)
                     if uninstall=="random":
-                        appt=open("random.txt","w")
+                        appt=open("save_txt/random.txt","w")
                         appt.write(app.get("random"))
                         appt.close()
                     if uninstall=="time":
-                        appt=open("time.txt","w")
+                        appt=open("save_txt/time.txt","w")
                         appt.write(app.get("time"))
                         appt.close()
                     if uninstall=="music":
-                        appt=open("music.txt","w")
+                        appt=open("save_txt/music.txt","w")
                         appt.write(app.get("music"))
                         appt.close()
                     if uninstall=="uuid":
-                        appt=open("uuid.txt","w")
+                        appt=open("save_txt/uuid.txt","w")
                         appt.write(app.get("uuid"))
                         appt.close()
                     if uninstall=="image":
-                        appt=open("image.txt","w")
+                        appt=open("save_txt/image.txt","w")
                         appt.write(str(app.get("image")))
                         appt.close()
                     if uninstall=="browser":
-                        appt=open("browser.txt","w")
+                        appt=open("save_txt/browser.txt","w")
                         appt.write(str(app.get("browser")))
                         appt.close()
                     if uninstall=="print":
-                        appt=open("print.txt","w")
+                        appt=open("save_txt/print.txt","w")
                         appt.write(str(app.get("print")))
                         appt.close()
                     if uninstall=="maths":
-                        appt=open("maths.txt","w")
+                        appt=open("save_txt/maths.txt","w")
                         appt.write(str(app.get("maths")))
                         appt.close()
                     if uninstall=="download":
-                        appt=open("download.txt","w")
+                        appt=open("save_txt/download.txt","w")
                         appt.write(str(app.get("download")))
                         appt.close()
                     if uninstall=="prompt":
-                        appt=open("prompt.txt","w")
+                        appt=open("save_txt/prompt.txt","w")
                         appt.write(str(app.get("prompt")))
                         appt.close()
                 else:
-                    print(colored("L'app que vous essayez de désinstaller n'est pas installée","yellow",attrs=["bold"]))
+                    print(colored("Le module que vous essayez de désinstaller n'est pas installée","yellow",attrs=["bold"]))
             else:
-                print(colored("L'app que vous voulez desinstaller n'existe pas","yellow",attrs=["bold"]))
-        elif rep.startswith("music"):
-            if app.get("music")=="1":
-                    error=0
-                    music=rep.split()
-                    if displaysplit==1:
-                        print(music)
-                    if music[1]=="store":
-                        print("Voici votre musique :")
-                        fichiers = os.listdir(adresse+"/music")
-                        longueur=len(fichiers)
-                        for element in range(longueur):
-                            print(" ",fichiers[element])
-                    if len(music)==3:
-                        if music[1]=="play":
-                            fichiers = os.listdir(adresse+"/music")
-                            musicplay=rep[11::]
-                            if musicplay in fichiers:
-                                musicd=adresse+"/music"/+musicplay
-                                wave_object = sa.WaveObject.from_wave_file(musicd)
-                                print(colored("Le son suivant va être lu : ","blue",attrs=["bold"]))
-                                play_object = wave_object.play()
-                            else:
-                                print(colored("Ce fichier n'existe pas","yellow",attrs=["bold"]))
-                        else:
-                            print(colored("La commande est mal formulée","red",attrs=["bold"]))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
-        elif rep.startswith("image"):
-            if app.get("image")=="1":
-                    error=0
-                    image=rep.split()
-                    if displaysplit==1:
-                        print(image)
-                    if image[1]=="store":
-                        print("Voici votre phototèque :")
-                        fichiers = os.listdir(adresse+"/image")
-                        longueur=len(fichiers)
-                        for element in range(longueur):
-                            print(" ",fichiers[element])
-                    if len(image)==3:
-                        if image[1]=="display":
-                            fichiers = os.listdir(adresse+"/image")
-                            imgaffich=rep[14::]
-                            print(imgaffich)
-                            if imgaffich in fichiers:
-                                imgd=adresse+"/image/"+imgaffich
-                                im = Image.open(imgd)
-                                im.show()
-                            else:
-                                print(colored("Ce fichier n'existe pas","yellow",attrs=["bold"]))
-                        else:
-                            print(colored("La commande est mal formulé","red",attrs=["bold"]))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+                print(colored("Le module que vous voulez desinstaller n'existe pas","yellow",attrs=["bold"]))
+#################################
+#Mot de passe modification
+#################################
         elif rep.startswith("mdp"):
             mdp=rep.split()
             if displaysplit==1:
                 print(mdp)
             if len(mdp)==1:
                 if not mdpt=="6":
-                    mdpdise="Le mot de passe est :"+mdpt
+                    mdpdise="Le mot de passe est : "+mdpt
                     print(colored(mdpdise,"blue",attrs=["bold"]))
                 else:
                     print(colored("Le mot de passe est désactivé","blue",attrs=["bold"]))
@@ -620,7 +604,7 @@ def cmd():
                     if mdp[1]=="act":
                         if mdpt=="6":
                             mdpt=input("Taper votre nouveau mot de passe : ")
-                            mdptext=open("mdp.txt","w")
+                            mdptext=open("save_txt/mdp.txt","w")
                             mdptext.write(mdpt)
                             mdptext.close()
                         else:
@@ -629,24 +613,20 @@ def cmd():
                         if not mdpt=="6":
                             print(colored("Le mot de passe a bien été désactivé","blue",attrs=["bold"]))
                             mdpt="6"
-                            mdptext=open("mdp.txt","w")
+                            mdptext=open("save_txt/mdp.txt","w")
                             mdptext.write(mdpt)
                             mdptext.close()
                         else:
                             print(colored("Le mot de passe est déja desactivé","yellow",attrs=["bold"]))
+                    else:
+                        print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
                 else:
                     print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
             else:
                 print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
-        elif rep.startswith("browser"):
-            if app.get("browser")=="1":
-                browser=rep[8::]
-                if type(browser)==str:
-                    webbrowser.open(browser)
-                else:
-                    print(colored("L'URl n'est pas bonne","red"))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+#################################
+#Update
+#################################
         elif rep.startswith("update"):
             update=rep.split()
             if displaysplit==1:
@@ -679,34 +659,9 @@ def cmd():
                     print(colored("La commande est mal formulée","red",attrs=["bold"]))
             else:
                 print(colored("La commande est mal formulée","red",attrs=["bold"]))
-        elif rep.startswith("print"):
-            error=0
-            if app.get("print")=="1":
-                if len(rep)>=9:
-                    colorp={"b":"blue","g":"green","r":"red","w":"white","y":"yellow","m":"magenta","c":"cyan"}
-                    if rep[6] in colorp:
-                        colorprint=colorp.get(rep[6])
-                    else:
-                        print(colored("Cette couleur n'est pas prise en charge","red",attrs=["bold"]))
-                        error=1
-                    print1=rep[8::]
-                    if error==0:
-                        print(colored(print1,colorprint))
-                else:
-                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
-        elif rep.startswith("prompt"):
-            if app["prompt"]=="1":
-                prompt=rep.split()
-                if displaysplit==1:
-                    print(prompt)
-                if len(prompt)==1:
-                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
-                else:
-                    os.system(rep[7::])
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+#################################
+#Store list
+#################################
         elif rep=="store list":
             if app.get("random")=="1":
                 print(colored("Le module random est installé","blue",attrs=["bold"]))
@@ -748,46 +703,14 @@ def cmd():
                 print(colored("Le module prompt est installé","blue",attrs=["bold"]))
             else:
                 print(colored("Le module prompt n'est pas installé","blue",attrs=["bold"]))
+#################################
+#Clear
+#################################
         elif rep=="clear":
             os.system("clear")
-        elif rep.startswith("maths"):
-            if app.get("maths")=="1":
-                maths1=rep.split()
-                if displaysplit==1:
-                    print(maths1)
-                if len(maths1)==4:
-                    op=["+","-","*","/","%","p"]
-                    op1=maths1[2]
-                    if op1 in op:
-                        try:
-                            terme1=float(maths1[1])
-                            terme2=float(maths1[3])
-                            if op1=="+":
-                                result=terme1+terme2
-                                print(terme1,op1,terme2,"=",result)
-                            if op1=="-":
-                                result=terme1-terme2
-                                print(terme1,op1,terme2,"=",result)
-                            if op1=="*":
-                                result=terme1*terme2
-                                print(terme1,op1,terme2,"=",result)
-                            if op1=="/":
-                                result=terme1/terme2
-                                print(terme1,op1,terme2,"=",result)
-                            if op1=="%":
-                                result=terme1%terme2
-                                print(terme1,op1,terme2,"=",result)
-                            if op1=="p":
-                                result=pow(terme1,terme2)
-                                print(result)
-                        except:
-                            print(colored("L'un des termes/facteurs n'est pas valide","red",attrs=["bold"]))
-                    else:
-                        print(colored("Cet opérateur n'est pas prise en charge ou n'existe pas","red",attrs=["bold"]))
-                else:
-                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
-            else:
-                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+#################################
+#Godmode
+#################################
         elif rep=="godmode":
             if admin==1:
                 print(colored("Le godmode est un ensemble de fonctions et de paramètres conçus pour les dévéloppeurs, n'y toucher seulement si vous savez ce que vous faites","yellow",attrs=["bold"]))
@@ -847,33 +770,75 @@ def cmd():
                         print("La valeur entrée n'est pas correcte")
             else:
                 print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser le godmode","red",attrs=["bold"]))
-        elif rep.startswith("log"):
-            if admin==1:
-                log1=rep.split()
-                if displaysplit==1:
-                    print(log1)
-                if len(log1)==2 and type(log1[1])==str:
-                    if log1[1]=="show":
-                        for lettre in log:
-                            print(lettre)
-                    elif log1[1]=="delete":
-                        log=["Voici les logs :"]
-                    else:
-                        print(colored("La commande est mal formulée","red",attrs=["bold"]))
-                else:
-                    print(colored("La commande est mal formulée","red",attrs=["bold"]))
+###############################
+#Module                       #
+###############################
+        elif rep.startswith("random"):
+            if app.get("random")=="1":
+                module.random.execute(displaysplit,rep)
             else:
-                print(colored("Vous devez être connecté en tant qu'administrateur pour utiliser cette commande","red",attrs=["bold"]))
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("time"):
+            if app.get("time")=="1":
+                module.time.execute(displaysplit,rep)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("music"):
+            if app.get("music")=="1":
+                module.music.execute(displaysplit,rep,adresse)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep=="uuid":
+            if app.get("uuid")=="1":
+                module.uuid.execute()
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("image"):
+            if app.get("image")=="1":
+                module.image.execute(displaysplit,rep,adresse)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("browser"):
+            if app.get("browser")=="1":
+                module.browser.execute(displaysplit,rep)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("print"):
+            if app.get("print")=="1":
+                module.print.execute(displaysplit,rep)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("maths"):
+            if app.get("maths")=="1":
+                module.maths.execute(displaysplit,rep)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("download"):
+            if app.get("download")=="1":
+                module.download.execute(displaysplit,rep)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"]))
+        elif rep.startswith("prompt"):
+            if app.get("prompt")=="1":
+                module.prompt.execute(displaysplit,rep)
+            else:
+                print(colored("Ce module n'est pas installé ou n'est pas bien formulé","red",attrs=["bold"])) 
+#################################
+#Commande n'existe pas
+#################################
         else:
             if not rep=="":
                 print(rep,": cette commande n'existe pas : essayer help")
+#################################
+#Login
+#################################
 def login():
     if not mdpt=="6":
         print("Taper",colored("shutdown",attrs=["bold"]),"pour éteindre")
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
             os.system("clear")
-            print(colored("""Cmd OS v1.21""","green",attrs=["bold"])) 
+            print(colored("""Cmd OS v2.0""","green",attrs=["bold"])) 
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
             cmd()
             return
