@@ -163,8 +163,8 @@ appinitext()
 ############################################
 #Info
 ############################################
-info={"sys":"Cmd OS v2.0 - Basé en Python",
-      "system":"Cmd OS v2.0 - Basé en Python",
+info={"sys":"CmdOS v2.0.1 - Basé en Python",
+      "system":"CmdOS v2.0.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -186,8 +186,8 @@ adresse=os.path.dirname(adresse)
 if not os.path.exists(adresse)==True:
     while not os.path.exists(adresse)==True:
         adresse=input("Le système n'a pas démmarrer correctement, veulliez rentrer le chemin absolu du dossier ou se trouve le fichier CmdOS.py : ")
-if not(os.path.exists(adresse+"/image") and os.path.exists(adresse+"/music") and os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/gif") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/app") and os.path.exists(adresse+"/save_txt")):
-    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe: image, music, __pycache__, gif et README.md.","red",attrs=["bold"]))
+if not(os.path.exists(adresse+"/image") and os.path.exists(adresse+"/music") and os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/app") and os.path.exists(adresse+"/save_txt")):
+    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe: image, music, __pycache__, app, module, save_txt et README.md.","red",attrs=["bold"]))
     quit()
 ############################################
 #Mot de passe
@@ -205,7 +205,7 @@ repmdp=""
 ############################################
 #Connexion
 ############################################
-print(colored("""Cmd OS v2.0""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.0.1""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -224,9 +224,9 @@ def cmd():
     charginstall=1
     displaysplit=0
     logserver=1
-    store="Bienvenue dans le store de Cmd OS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
+    store="Bienvenue dans le store de CmdOS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        version="2.0"
+        version="2.0.1"
         if app["random"]=="1":
             import module.random
         if app["time"]=="1":
@@ -838,7 +838,7 @@ def login():
         repmdp=input("Taper votre mot de passe : ")
         if repmdp==mdpt:
             os.system("clear")
-            print(colored("""Cmd OS v2.0""","green",attrs=["bold"])) 
+            print(colored("""CmdOS v2.0.1""","green",attrs=["bold"])) 
             print("""Taper""",colored("help",attrs=["bold"]),"""pour plus d'information""")
             cmd()
             return
