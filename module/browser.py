@@ -5,4 +5,4 @@ def execute(displaysplit,rep):
     if type(browser)==str:
         webbrowser.open(browser)
     else:
-        print(colored("L'URl n'est pas bonne","red"))
+        print(colored("L'URl n'est pas bonne","red",))
