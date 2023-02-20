@@ -168,8 +168,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.3 - Basé en Python",
-      "system":"CmdOS v2.3 - Basé en Python",
+info={"sys":"CmdOS v2.3.1 - Basé en Python",
+      "system":"CmdOS v2.3.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -197,7 +197,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.3""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.3.1""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -209,7 +209,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.3"
+version="2.3.1"
 ##########################
 #Fonction Cmd
 ##########################
@@ -708,9 +708,9 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 print(update)
             if len(update)==2:    
                 if update[1]=="upgrade":
-                    i=Result(text="Vous allez télécharger le fichier zip contenant les fichiers d'installation\nExtrayer dans le dossier de fonctionnement de ce fichier python puis supprimmer tous les fichiers de l'ancienne version\nEnfin, démmarer le fichier CmdOS.py",rt="important")
+                    i=Result(text="Vous allez télécharger le fichier zip contenant l'assistant pour mettre à jour CmdOS",rt="important")
                     i.print()
-                    webbrowser.open("https://github.com/lolo859/CmdOS/archive/refs/heads/main.zip")
+                    webbrowser.open("https://github.com/lolo859/get-cmdos/archive/refs/heads/main.zip")
                 elif update[1]=="check":
                     versiontxt=req.get("https://biotech-online.pagesperso-orange.fr/Mathias/cmdversion",allow_redirects=True)
                     open("cmdversion.txt","wb").write(versiontxt.content)
