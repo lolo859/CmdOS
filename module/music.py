@@ -1,4 +1,4 @@
-import simpleaudio as sa
+from playsound import playsound
 import os
 from termcolor import colored
 def execute(displaysplit,rep,adresse):
@@ -16,13 +16,8 @@ def execute(displaysplit,rep,adresse):
             fichiers = os.listdir(adresse+"/music")
             musicplay=rep[11::]
             if musicplay in fichiers:
-                try:
-                    musicd=adresse+"/music/"+musicplay
-                    wave_object = sa.WaveObject.from_wave_file(musicd)
-                    print(colored(("Le son suivant va être lu : "+musicplay),"blue",attrs=["bold"]))
-                    play_object = wave_object.play()
-                except sa.wave.Error:
-                    print(colored("Le fichier doit être un fichier wave","red",attrs=["bold"]))
+                musicd=adresse+"/music/"+musicplay
+                playsound(musicd,block=False)
             else:
                 print(colored("Ce fichier n'existe pas","yellow",attrs=["bold"]))
         else:
