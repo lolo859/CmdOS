@@ -21,10 +21,9 @@ import subprocess
 import sys
 import webbrowser
 import secure_id
-from cryptography.fernet import Fernet
 import psycopg2
 import shutil
-os.system("clear")
+cmdf.clear()
 #########################################################################
 #Admin, commande
 #########################################################################
@@ -168,11 +167,11 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.3.1 - Basé en Python",
-      "system":"CmdOS v2.3.1 - Basé en Python",
+info={"sys":"CmdOS v2.4 - Basé en Python",
+      "system":"CmdOS v2.4 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
-      "music":"Module Music""\nVersion : 1.1""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
+      "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
       "uuid":"Module Uuid""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module uuid4",
       "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module PIL",
       "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module browser",
@@ -197,7 +196,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.3.1""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.4""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -209,7 +208,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.3.1"
+version="2.4"
 ##########################
 #Fonction Cmd
 ##########################
@@ -552,7 +551,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
 #Shell
 #################################
         elif rep=="shutdown" or rep=="sh" or rep=="shell":
-            os.system("clear")
+            cmdf.clear()
             sys.exit()
 #################################
 #Info
@@ -810,7 +809,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
 #Clear
 #################################
         elif rep=="clear":
-            os.system("clear")
+            cmdf.clear()
 #################################
 #log out : déconnexion
 #################################
@@ -852,6 +851,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                     print("cmd() - protocole qui gère les interactions avec l'utilisateur")
                     print("appinitext() - protocole qui récupère les modules installés ou non")
                     print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
+                    print("clear() - protocole qui efface l'invite de commande")
                 if godmode1=="sys.protocol.execute":
                     print("Cette fonction éxécute le protocole demandé (elle positionne automatiquement les arguments)")
                     input("Taper entrer pour exécuter")
@@ -862,6 +862,8 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                         cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
                     if godmode2=="login":
                         login()
+                    if godmode2=="clear":
+                        cmdf.clear()
                 if godmode1=="sys.protocol.cmd.display_split":
                     print("Cette fonction permet d'afficher le split de la variable rep lors du traitement de la commande")
                     input("Taper entrer pour exécuter")
@@ -972,7 +974,7 @@ def login():
     adresse=os.path.dirname(adresse)
     valida="no"
     repsql=[]
-    os.system("clear")
+    cmdf.clear()
     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
     while True:
         if len(os.listdir(adresse+"/user"))==0:
@@ -1011,7 +1013,7 @@ def login():
                 displaysplit=repsql[4]
                 logserver=repsql[3]
                 charginstall=repsql[5]
-                os.system("clear")
+                cmdf.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print("""Taper "help" pour plus d'information""")
                 cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
@@ -1055,7 +1057,7 @@ def login():
                 displaysplit=0
                 logserver=1
                 charginstall=1
-                os.system("clear")
+                cmdf.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print("""Taper "help" pour plus d'information""")
                 cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
@@ -1074,7 +1076,7 @@ def login():
                 for element in range(longueur):
                     print(" "+fichiers[element]+" - se connecter avec ce compte")
                 rep=input("Votre choix : ")
-                os.system("clear")
+                cmdf.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 if rep=="1":
                     valida="no"
@@ -1182,7 +1184,7 @@ def login():
                     displaysplit=repsql[4]
                     logserver=repsql[3]
                     charginstall=repsql[5]
-                    os.system("clear")
+                    cmdf.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     a=0
@@ -1201,4 +1203,4 @@ while True :
 connect.quit()
 cur.close()
 connsql.close()
-os.system("clear")
+cmdf.clear()

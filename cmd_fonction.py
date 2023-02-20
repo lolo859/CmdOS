@@ -1,7 +1,7 @@
 import time
 import os
 from termcolor import colored
-import requests as req
+import sys
 
 def charg(chrag1=0.1,t=colored("Démarrage du système...","blue",attrs=["bold"])):
     os.system("clear")
@@ -85,3 +85,9 @@ def charg(chrag1=0.1,t=colored("Démarrage du système...","blue",attrs=["bold"]
     print(colored("[####################################################################################################] 100%","blue",attrs=["bold"]))
     time.sleep(chrag1)
     os.system("clear")
+
+def clear():
+    if str(sys.platform).startswith("win"):
+        os.system("cls")
+    else:
+        os.system("clear")
