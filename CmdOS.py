@@ -24,6 +24,7 @@ import secure_id
 import indecode
 import psycopg2
 import shutil
+import platform
 cmdf.clear()
 #########################################################################
 #Admin, commande
@@ -168,8 +169,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.5 - Basé en Python",
-      "system":"CmdOS v2.5 - Basé en Python",
+info={"sys":"CmdOS v2.5.1 - Basé en Python",
+      "system":"CmdOS v2.5.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -197,7 +198,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.5""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.5.1""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -209,7 +210,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.5"
+version="2.5.1"
 ##########################
 #Fonction Cmd
 ##########################
@@ -245,9 +246,9 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
 #Gestion entrée utilisateur et result
 ###########################################
         if admin==0:
-            demande=colored(repname,"green",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(os.uname().nodename+"."+os.uname().sysname,"cyan",attrs=["bold"])+":"+colored(adresse,"blue",attrs=["bold"])+" >>> "
+            demande=colored(repname,"green",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(platform.uname().node+"."+platform.uname().system,"cyan",attrs=["bold"])+":"+colored(adresse,"blue",attrs=["bold"])+" >>> "
         else:
-            demande=colored(repname,"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(os.uname().nodename+"."+os.uname().sysname,"cyan",attrs=["bold"])+":"+colored(adresse,"blue",attrs=["bold"])+" >>> "
+            demande=colored(repname,"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(platform.uname().node+"."+platform.uname().system,"cyan",attrs=["bold"])+":"+colored(adresse,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
         class Result():
             def __init__(self,text,rt,module=None,object=None):
@@ -282,7 +283,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 if logserver==1:
                     id=str(secure_id.sid2())
                     contenttxt=open(adresseuser+"/content.txt","w")
-                    contenttxt.write(indecode.code(repname+"(admin)@"+os.uname().nodename+"."+os.uname().sysname+" "+heure+" "+version+" "+rep))
+                    contenttxt.write(indecode.code(repname+"(admin)@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep))
                     contenttxt.close()
                     contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
@@ -295,7 +296,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 if logserver==1:
                     id=str(secure_id.sid2())
                     contenttxt=open(adresseuser+"/content.txt","w")
-                    contenttxt.write(indecode.code(repname+"@"+os.uname().nodename+"."+os.uname().sysname+" "+heure+" "+version+" "+rep))
+                    contenttxt.write(indecode.code(repname+"@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep))
                     contenttxt.close()
                     contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
@@ -732,7 +733,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                         i.print()
                     else:
                         i=Result("Votre système n'est pas a jour","advert")
-                        i.prinr()
+                        i.print()
                         versionprint="La dernière version disponible est CmdOS "+verlist[0]+"\nVous pouvez mettre a jour le système avec update upgrade"
                         i=Result(versionprint,"important")
                         i.print()
