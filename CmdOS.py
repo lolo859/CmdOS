@@ -33,7 +33,7 @@ else:
     admin=0
 a=0
 com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes"
-     "\ninfo - Afficher les infos sur un programme / utliser sys pour voir la version du système / utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"
+     "\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"
      "\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"
      "\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"
      "\ndir - permet de voir les fichiers/dossiers"
@@ -167,8 +167,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.4 - Basé en Python",
-      "system":"CmdOS v2.4 - Basé en Python",
+info={"sys":"CmdOS v2.4.1 - Basé en Python",
+      "system":"CmdOS v2.4.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -196,7 +196,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.4""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.4.1""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -208,7 +208,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.4"
+version="2.4.1"
 ##########################
 #Fonction Cmd
 ##########################
@@ -216,10 +216,12 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
 #################################
 #Variable, module
 #################################
+    os.chdir(adresseuser)
     global adresse,app,mdptext,repmdp,connect,version,a
     log=["Voici les logs :"]
     store="Bienvenue dans le store de CmdOS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
+        os.chdir(adresse)
         if app["random"]=="1":
             import module.random
         if app["time"]=="1":
@@ -244,9 +246,9 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
 #Gestion entrée utilisateur et result
 ###########################################
         if admin==0:
-            demande=colored(repname,"green",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(adresse,"blue",attrs=["bold"])+" >>> "
+            demande=colored(repname,"green",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(os.uname().nodename+"."+os.uname().sysname,"cyan",attrs=["bold"])+":"+colored(adresse,"blue",attrs=["bold"])+" >>> "
         else:
-            demande=colored(repname,"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(adresse,"blue",attrs=["bold"])+" >>> "
+            demande=colored(repname,"green",attrs=["bold"])+colored("(admin)","red",attrs=["bold"])+colored("@","green",attrs=["bold"])+colored(os.uname().nodename+"."+os.uname().sysname,"cyan",attrs=["bold"])+":"+colored(adresse,"blue",attrs=["bold"])+" >>> "
         rep=input(demande)
         class Result():
             def __init__(self,text,rt,module=None,object=None):
@@ -415,21 +417,21 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
             if displaysplit==1:
                 Result.split()
             if len(cd)>=2:
-                if not rep[3::]=="..":
-                    if os.path.exists(rep[3::]) and rep[3::].find("/")==True:
+                if rep[3::]=="..":
+                    adresse=os.path.dirname(adresse)
+                elif rep[3::]=="~":
+                    adresse=adresseuser
+                elif os.path.isabs(os.path.join(adresse,rep[3::])) or os.path.isabs(rep[3::]):
+                    if rep[3::].startswith("/") and os.path.exists(rep[3::]):
                         adresse=rep[3::]
-                    elif rep[3::].find("/"):
-                        fichiers=os.listdir(adresse)
-                        if rep[3::] in fichiers and os.path.isdir(os.path.join(adresse,rep[3::])):
-                            adresse=os.path.join(adresse,rep[3::])
-                        else:
-                            i=Result(module="cd",object=rep[3::],rt="notfound",text=None)
-                            i.print()
+                    elif os.path.exists(os.path.join(adresse,rep[3::])):
+                        adresse=os.path.join(adresse,rep[3::])
                     else:
                         i=Result("Le dossier n'est pas valide","error",module="cd")
-                        i.print()
+                        i.print()                        
                 else:
-                    adresse=os.path.dirname(adresse)
+                    i=Result("Le dossier n'est pas valide","error",module="cd")
+                    i.print()
             else:
                 i=Result("La commande est mal formulée","error",module="cd")
                 i.print()
