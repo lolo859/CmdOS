@@ -17,7 +17,7 @@ def execute(displaysplit,rep,adresse):
             musicplay=rep[11::]
             if musicplay in fichiers:
                 musicd=adresse+"/music/"+musicplay
-                playsound(r(musicd),block=False)
+                playsound(musicd,block=False)
             else:
                 print(colored("Ce fichier n'existe pas","yellow",attrs=["bold"]))
         else:
