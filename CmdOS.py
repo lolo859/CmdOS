@@ -21,6 +21,7 @@ import subprocess
 import sys
 import webbrowser
 import secure_id
+import indecode
 import psycopg2
 import shutil
 cmdf.clear()
@@ -167,8 +168,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.4.1 - Basé en Python",
-      "system":"CmdOS v2.4.1 - Basé en Python",
+info={"sys":"CmdOS v2.5 - Basé en Python",
+      "system":"CmdOS v2.5 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -196,7 +197,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.4.1""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.5""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -208,7 +209,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.4.1"
+version="2.5"
 ##########################
 #Fonction Cmd
 ##########################
@@ -216,12 +217,10 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
 #################################
 #Variable, module
 #################################
-    os.chdir(adresseuser)
     global adresse,app,mdptext,repmdp,connect,version,a
     log=["Voici les logs :"]
     store="Bienvenue dans le store de CmdOS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
-        os.chdir(adresse)
         if app["random"]=="1":
             import module.random
         if app["time"]=="1":
@@ -282,10 +281,10 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 heure=str(datetime.now())
                 if logserver==1:
                     id=str(secure_id.sid2())
-                    contenttxt=open("content.txt","w")
-                    contenttxt.write(repname+"(admin) "+heure+" "+version+" "+rep)
+                    contenttxt=open(adresseuser+"/content.txt","w")
+                    contenttxt.write(indecode.code(repname+"(admin)@"+os.uname().nodename+"."+os.uname().sysname+" "+heure+" "+version+" "+rep))
                     contenttxt.close()
-                    contenttxt=open("content.txt","rb")
+                    contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
                     contenttxt.close()
                     log.append(id+" "+colored(repname,"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
@@ -295,10 +294,10 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 heure=str(datetime.now())
                 if logserver==1:
                     id=str(secure_id.sid2())
-                    contenttxt=open("content.txt","w")
-                    contenttxt.write(repname+" "+heure+" "+version+" "+rep)
+                    contenttxt=open(adresseuser+"/content.txt","w")
+                    contenttxt.write(indecode.code(repname+"@"+os.uname().nodename+"."+os.uname().sysname+" "+heure+" "+version+" "+rep))
                     contenttxt.close()
-                    contenttxt=open("content.txt","rb")
+                    contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
                     contenttxt.close()
                     log.append(id+" "+colored(repname,"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
@@ -666,7 +665,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                     elif user[1]=="password":
                         answer=input("Taper votre nouveau mot de passe (pas plus de 50 caractères) : ")
                         if not len(answer)>=50:
-                            commandsql="UPDATE utilisateur SET mdp='"+str(answer)+"' WHERE nom='"+str(repname)+"';"
+                            commandsql="UPDATE utilisateur SET mdp='"+str(indecode.code(answer))+"' WHERE nom='"+str(repname)+"';"
                             cur.execute(commandsql)
                             connsql.commit()
                             mdpt=answer
@@ -981,7 +980,7 @@ def login():
     while True:
         if len(os.listdir(adresse+"/user"))==0:
             compte=input("Vouler vous vous connecter (1), créer un compte (2) ou annuler (3) ? : ")
-            os.system('clear')
+            cmdf.clear()
             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
             if compte=="1":
                 valida="no"
@@ -992,12 +991,12 @@ def login():
                     cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
                     repsql=cur.fetchall()
                     if repsql==[]:
-                        os.system('clear')
+                        cmdf.clear()
                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                         print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                     else:
                         repsql=list(repsql[0])
-                        if repmdp==repsql[0]:
+                        if repmdp==indecode.decode(repsql[0]):
                             os.makedirs("user/"+repname+"/image")
                             os.makedirs("user/"+repname+"/music")
                             os.makedirs("user/"+repname+"/save_module")
@@ -1007,7 +1006,7 @@ def login():
                             adresseuser=adresse
                             valida="ok"
                         else:
-                            os.system('clear')
+                            cmdf.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
                 mdpt=repsql[0]
@@ -1027,12 +1026,12 @@ def login():
                     repmdp=input("Entrer un mot de passe (pas plus de 50 caractères) : ")
                     if not len(repname)>=50 and not len(repmdp)>=50:
                         if repmdp=="shutdown":
-                            os.system('clear')
+                            cmdf.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le mot de passe ne peut pas être 'shutdown'","red",attrs=["bold"]))
                         else:
                             try:
-                                commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(repmdp)+"',0);"
+                                commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(indecode.code(repmdp))+"',0);"
                                 cur.execute(commandsql)
                                 connsql.commit()
                                 commandsql="INSERT INTO settings VALUES ('"+str(repname)+"',0,1,1);"
@@ -1047,11 +1046,11 @@ def login():
                                 adresseuser=adresse
                                 valida="ok"
                             except psycopg2.errors.UniqueViolation:
-                                os.system('clear')
+                                cmdf.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le nom d'utilisateur est déja pris","red",attrs=["bold"]))
                     else:
-                        os.system('clear')
+                        cmdf.clear()
                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                         print(colored("Une valeur entrée n'est pas valide","red",attrs=["bold"]))
                 mdpt=repmdp
@@ -1065,16 +1064,17 @@ def login():
                 cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
                 return
             elif compte=="3":
-                break
+                cmdf.clear()
+                exit()
             else:
-                os.system('clear')
+                cmdf.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print(colored("La valeur entrée n'est pas valide","red",attrs=["bold"]))
         else:
             while True:
                 print("Selectionner une option ou taper le nom d'un compte existant sur la machine : \n 1 - Ajouter un compte existant\n 2 - Créer un compte\n 3 - Eteindre")
-                fichiers=os.listdir("user")
-                longueur=len(os.listdir("user"))
+                fichiers=os.listdir(os.path.dirname(__file__)+"/user")
+                longueur=len(fichiers)
                 for element in range(longueur):
                     print(" "+fichiers[element]+" - se connecter avec ce compte")
                 rep=input("Votre choix : ")
@@ -1089,12 +1089,12 @@ def login():
                         cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
                         repsql=cur.fetchall()
                         if repsql==[]:
-                            os.system('clear')
+                            cmdf.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                         else:
                             repsql=list(repsql[0])
-                            if repmdp==repsql[0]:
+                            if repmdp==indecode.decode(repsql[0]):
                                 try:
                                     os.makedirs("user/"+repname+"/image")
                                     os.makedirs("user/"+repname+"/music")
@@ -1103,14 +1103,14 @@ def login():
                                     app=appinitext(repname)
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
-                                    mdpt=repsql[0]
+                                    mdpt=repmdp
                                     valida="ok"
                                 except FileExistsError:
-                                    os.system('clear')
+                                    cmdf.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le compte est déja ajouté","red",attrs=["bold"]))
                             else:
-                                os.system('clear')
+                                cmdf.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
                 elif rep=="2":
@@ -1120,12 +1120,12 @@ def login():
                         repmdp=input("Entrer un mot de passe (pas plus de 50 caractères) : ")
                         if not len(repname)>=50 and not len(repmdp)>=50:
                             if repmdp=="shutdown":
-                                os.system('clear')
+                                cmdf.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le mot de passe ne peut pas être 'shutdown'","red",attrs=["bold"]))
                             else:
                                 try:
-                                    commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(repmdp)+"',0);"
+                                    commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(indecode.code(repmdp))+"',0);"
                                     cur.execute(commandsql)
                                     connsql.commit()
                                     commandsql="INSERT INTO settings VALUES ('"+str(repname)+"',0,1,1);"
@@ -1144,15 +1144,16 @@ def login():
                                     repsql=list(repsql[0])
                                     valida="ok"
                                 except psycopg2.errors.UniqueViolation:
-                                    os.system('clear')
+                                    cmdf.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le nom d'utilisateur est déja pris","red",attrs=["bold"]))
                         else:
-                            os.system('clear')
+                            cmdf.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Une valeur entrée n'est pas valide","red",attrs=["bold"]))
                 elif rep=="3":
-                    return
+                    cmdf.clear()
+                    exit()
                 elif rep in fichiers:
                     valida="no"
                     while valida!="ok":
@@ -1164,7 +1165,7 @@ def login():
                             cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
                             repsql=cur.fetchall()
                             repsql=list(repsql[0])
-                            if repmdp==repsql[0]:
+                            if repmdp==indecode.decode(repsql[0]):
                                 mdpt=repmdp
                                 adresse=adresse+"/user/"+repname
                                 adresseuser=adresse
@@ -1172,13 +1173,13 @@ def login():
                                 valida="ok"
                                 break
                             else:
-                                os.system('clear')
+                                cmdf.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
                         else:
                             return
                 else:
-                    os.system('clear')
+                    cmdf.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print(colored("La valeur entrée n'est pas valide","red",attrs=["bold"]))
                 if valida=="ok":
