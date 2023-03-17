@@ -34,20 +34,23 @@ if (len(sys.argv)==2 and sys.argv[1]=="admin") or (len(sys.argv)==1 and sys.argv
 else:
     admin=0
 a=0
-com={"help":"Voici la liste des commandes de Cmd OS :""\nhelp - Afficher la liste des commandes"
-     "\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"
-     "\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"
-     "\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"
-     "\ndir - permet de voir les fichiers/dossiers"
-     "\nuser - Voir vos identifiants :\n   user - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte"
-     "\nren - renomer un fichier"
-     "\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"
-     "\nadmin - active ou désactive le mode admin"
-     "\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"
-     "\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"
-     "\nshell (version raccourci : sh) - ouvre le cmd"
-     "\nexecute - permet d'éxécuter des fonctions exterieures au système"
-     "\nunlog - déconnecte l'utilisateur"}
+help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"+"\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nexecute - permet d'éxécuter des fonctions exterieures au système"+"\nunlog - déconnecte l'utilisateur"
+com={
+     "help":"help - Afficher la liste des commandes :\n   help <commande>",
+     "info":"info - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app",
+     "store":"store - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés",
+     "cd":"cd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent",
+     "dir":"dir - permet de voir les fichiers/dossiers",
+     "user":"user - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage",
+     "ren":"ren - renomer un fichier",
+     "update":"update :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible",
+     "admin":"admin - active ou désactive le mode admin",
+     "log":"log - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
+     "detail":"detail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result",
+     "shell":"shell (version raccourci : sh) - ouvre le cmd",
+     "execute":"execute - permet d'éxécuter des fonctions exterieures au système",
+     "unlog":"unlog - déconnecte l'utilisateur"
+     }
 ############################################
 #App
 ############################################
@@ -169,8 +172,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.5.1 - Basé en Python",
-      "system":"CmdOS v2.5.1 - Basé en Python",
+info={"sys":"CmdOS v2.6 - Basé en Python",
+      "system":"CmdOS v2.6 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -198,7 +201,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.5.1""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.6""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -210,11 +213,11 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.5.1"
+version="2.6"
 ##########################
 #Fonction Cmd
 ##########################
-def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
+def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key):
 #################################
 #Variable, module
 #################################
@@ -283,7 +286,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 if logserver==1:
                     id=str(secure_id.sid2())
                     contenttxt=open(adresseuser+"/content.txt","w")
-                    contenttxt.write(indecode.code(repname+"(admin)@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep))
+                    contenttxt.write(indecode.code(repname+"(admin)@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep,key))
                     contenttxt.close()
                     contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
@@ -296,7 +299,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                 if logserver==1:
                     id=str(secure_id.sid2())
                     contenttxt=open(adresseuser+"/content.txt","w")
-                    contenttxt.write(indecode.code(repname+"@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep))
+                    contenttxt.write(indecode.code(repname+"@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep,key))
                     contenttxt.close()
                     contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
@@ -311,9 +314,16 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
             connect=FTP(host,user,password)
             connect.sendcmd('CWD www')
             connect.sendcmd("CWD command")
-        if rep in com:
-            i=Result(text=com[rep],rt="stdout")
+        if rep=="help":
+            i=Result(text=help,rt="stdout")
             i.print()
+        elif rep.startswith("help "):
+            aide=rep[5::]
+            if aide in com:
+                print(com[aide])
+            else:
+                i=Result("commande",rt="notfound",object=aide,module="help")
+                i.print()
 #################################
 #Store
 #################################
@@ -691,6 +701,11 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                             connsql.commit()
                             a=1
                             return
+                    elif user[1]=="reset":
+                        key=indecode.generate_key()
+                        commandsql="UPDATE utilisateur SET mdp='"+str(indecode.code(mdpt,key))+"',key='"+key+"' WHERE nom='"+str(repname)+"';"
+                        i=Result("Votre clé de cryptage à bien été changé","stdout")
+                        i.print()
                     else:
                         i=Result("La commande est mal formulée","error",module="user")
                         i.print()
@@ -861,7 +876,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser):
                     if godmode2=="appinitext":
                         app=appinitext(repname)
                     if godmode2=="cmd":
-                        cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
+                        cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
                     if godmode2=="login":
                         login()
                     if godmode2=="clear":
@@ -989,15 +1004,19 @@ def login():
                     repsql=[]
                     repname=input("Taper votre nom d'utilisateur : ")
                     repmdp=input("Taper votre mot de passe : ")
-                    cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
-                    repsql=cur.fetchall()
-                    if repsql==[]:
+                    cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
+                    repsqluser=cur.fetchall()
+                    cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
+                    repsqlset=cur.fetchall()
+                    repsqluser=list(repsqluser[0])
+                    repsqlset=list(repsqlset[0])
+                    if repsqluser==[]:
                         cmdf.clear()
                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                         print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                     else:
                         repsql=list(repsql[0])
-                        if repmdp==indecode.decode(repsql[0]):
+                        if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
                             os.makedirs("user/"+repname+"/image")
                             os.makedirs("user/"+repname+"/music")
                             os.makedirs("user/"+repname+"/save_module")
@@ -1010,11 +1029,12 @@ def login():
                             cmdf.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
-                mdpt=repsql[0]
-                admin=repsql[2]
-                displaysplit=repsql[4]
-                logserver=repsql[3]
-                charginstall=repsql[5]
+                mdpt=indecode.decode(repsqluser[1],repsqluser[3])
+                admin=repsqluser[2]
+                displaysplit=repsqlset[1]
+                logserver=repsqlset[3]
+                charginstall=repsqlset[2]
+                key=repsqluser[3]
                 cmdf.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print("""Taper "help" pour plus d'information""")
@@ -1032,7 +1052,8 @@ def login():
                             print(colored("Le mot de passe ne peut pas être 'shutdown'","red",attrs=["bold"]))
                         else:
                             try:
-                                commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(indecode.code(repmdp))+"',0);"
+                                key=indecode.generate_key()
+                                commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(indecode.code(repmdp,key))+"',0,'"+key+"');"
                                 cur.execute(commandsql)
                                 connsql.commit()
                                 commandsql="INSERT INTO settings VALUES ('"+str(repname)+"',0,1,1);"
@@ -1062,7 +1083,7 @@ def login():
                 cmdf.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print("""Taper "help" pour plus d'information""")
-                cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
+                cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
                 return
             elif compte=="3":
                 cmdf.clear()
@@ -1074,7 +1095,7 @@ def login():
         else:
             while True:
                 print("Selectionner une option ou taper le nom d'un compte existant sur la machine : \n 1 - Ajouter un compte existant\n 2 - Créer un compte\n 3 - Eteindre")
-                fichiers=os.listdir(os.path.dirname(__file__)+"/user")
+                fichiers=os.listdir(adresse+"/user")
                 longueur=len(fichiers)
                 for element in range(longueur):
                     print(" "+fichiers[element]+" - se connecter avec ce compte")
@@ -1087,15 +1108,18 @@ def login():
                         repsql=[]
                         repname=input("Taper votre nom d'utilisateur : ")
                         repmdp=input("Taper votre mot de passe : ")
-                        cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
-                        repsql=cur.fetchall()
-                        if repsql==[]:
+                        cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
+                        repsqluser=cur.fetchall()
+                        cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
+                        repsqlset=cur.fetchall()
+                        repsqluser=list(repsqluser[0])
+                        repsqlset=list(repsqlset[0])
+                        if repsqluser==[]:
                             cmdf.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                         else:
-                            repsql=list(repsql[0])
-                            if repmdp==indecode.decode(repsql[0]):
+                            if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
                                 try:
                                     os.makedirs("user/"+repname+"/image")
                                     os.makedirs("user/"+repname+"/music")
@@ -1126,7 +1150,8 @@ def login():
                                 print(colored("Le mot de passe ne peut pas être 'shutdown'","red",attrs=["bold"]))
                             else:
                                 try:
-                                    commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(indecode.code(repmdp))+"',0);"
+                                    key=indecode.generate_key()
+                                    commandsql="INSERT INTO utilisateur VALUES ('"+str(repname)+"','"+str(indecode.code(repmdp,key))+"',0,'"+key+"');"
                                     cur.execute(commandsql)
                                     connsql.commit()
                                     commandsql="INSERT INTO settings VALUES ('"+str(repname)+"',0,1,1);"
@@ -1140,9 +1165,12 @@ def login():
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
                                     mdpt=repmdp
-                                    cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
-                                    repsql=cur.fetchall()
-                                    repsql=list(repsql[0])
+                                    cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
+                                    repsqluser=cur.fetchall()
+                                    cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
+                                    repsqlset=cur.fetchall()
+                                    repsqluser=list(repsqluser[0])
+                                    repsqlset=list(repsqlset[0])
                                     valida="ok"
                                 except psycopg2.errors.UniqueViolation:
                                     cmdf.clear()
@@ -1163,11 +1191,14 @@ def login():
                         print(colored("Taper shutdown pour éteindre"))
                         repmdp=input("Taper votre mot de passe : ")
                         if not repmdp=="shutdown":
-                            cur.execute("SELECT * FROM all_users WHERE all_users.nom='"+repname+"';")
-                            repsql=cur.fetchall()
-                            repsql=list(repsql[0])
-                            if repmdp==indecode.decode(repsql[0]):
-                                mdpt=repmdp
+                            cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
+                            repsqluser=cur.fetchall()
+                            cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
+                            repsqlset=cur.fetchall()
+                            repsqluser=list(repsqluser[0])
+                            repsqlset=list(repsqlset[0])
+                            if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
+                                mdpt=indecode.decode(repsqluser[1],repsqluser[3])
                                 adresse=adresse+"/user/"+repname
                                 adresseuser=adresse
                                 app=appinitext(repname)
@@ -1184,15 +1215,16 @@ def login():
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print(colored("La valeur entrée n'est pas valide","red",attrs=["bold"]))
                 if valida=="ok":
-                    admin=repsql[2]
-                    displaysplit=repsql[4]
-                    logserver=repsql[3]
-                    charginstall=repsql[5]
+                    admin=repsqluser[2]
+                    displaysplit=repsqlset[1]
+                    logserver=repsqlset[3]
+                    charginstall=repsqlset[2]
+                    key=repsqluser[3]
                     cmdf.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     a=0
-                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
+                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
                     return
 while True :
     login()
