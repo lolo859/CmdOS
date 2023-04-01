@@ -895,6 +895,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     print("version="+version+"")
                     print("godmode1='"+godmode1+"'")
                     print("adresseuser='"+adresseuser+"'")
+                    print("invit='"+str(invit)+"'")
                 if godmode1=="sys.store.install.vanish_loading":
                     print("Cette fonction permet de masquer le chargement lors de l'installation d'un module")
                     input("Taper entrer pour exécuter")
@@ -915,6 +916,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     print("appinitext() - protocole qui récupère les modules installés ou non")
                     print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
                     print("clear() - protocole qui efface l'invite de commande")
+                    print("connect() - vérifie si on est connecté à internet")
                 if godmode1=="sys.protocol.execute":
                     print("Cette fonction éxécute le protocole demandé (elle positionne automatiquement les arguments)")
                     input("Taper entrer pour exécuter")
@@ -927,6 +929,8 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                         login()
                     if godmode2=="clear":
                         cmdf.clear()
+                    if godmode2=="connect":
+                        cmdf.connect()
                 if godmode1=="sys.protocol.cmd.display_split":
                     print("Cette fonction permet d'afficher le split de la variable rep lors du traitement de la commande")
                     input("Taper entrer pour exécuter")
