@@ -2,6 +2,7 @@ import time
 import os
 from termcolor import colored
 import sys
+import requests as req
 
 def charg(chrag1=0.1,t=colored("Démarrage du système...","blue",attrs=["bold"])):
     os.system("clear")
@@ -91,3 +92,10 @@ def clear():
         os.system("cls")
     else:
         os.system("clear")
+
+def connect():
+    try:
+        req.get("https://www.google.com",allow_redirects=True)
+        return True
+    except:
+        return False
