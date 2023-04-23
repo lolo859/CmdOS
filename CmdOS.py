@@ -172,8 +172,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.7 - Basé en Python",
-      "system":"CmdOS v2.7 - Basé en Python",
+info={"sys":"CmdOS v2.7.1 - Basé en Python",
+      "system":"CmdOS v2.7.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -201,7 +201,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.7""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.7.1""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -213,7 +213,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.7"
+version="2.7.1"
 invit=0
 ##########################
 #Fonction Cmd
@@ -316,6 +316,8 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
             connect=FTP(host,user,password)
             connect.sendcmd('CWD www')
             connect.sendcmd("CWD command")
+        except:
+            pass
         if rep=="help":
             i=Result(text=help,rt="stdout")
             i.print()
@@ -1040,7 +1042,6 @@ def login():
     adresse=os.path.realpath(__file__)
     adresse=os.path.dirname(adresse)
     valida="no"
-    repsql=[]
     cmdf.clear()
     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
     while True:
@@ -1052,7 +1053,6 @@ def login():
                 if cmdf.connect():
                     valida="no"
                     while valida!="ok":
-                        repsql=[]
                         repname=input("Taper votre nom d'utilisateur : ")
                         repmdp=input("Taper votre mot de passe : ")
                         cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
@@ -1066,7 +1066,6 @@ def login():
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                         else:
-                            repsql=list(repsql[0])
                             if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
                                 os.makedirs("user/"+repname+"/image")
                                 os.makedirs("user/"+repname+"/music")
@@ -1089,7 +1088,7 @@ def login():
                     cmdf.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
-                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser)
+                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
                     return
                 else:
                     cmdf.clear()
@@ -1181,7 +1180,6 @@ def login():
                     valida="no"
                     if cmdf.connect():
                         while valida!="ok":
-                            repsql=[]
                             repname=input("Taper votre nom d'utilisateur : ")
                             repmdp=input("Taper votre mot de passe : ")
                             cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
@@ -1286,7 +1284,6 @@ def login():
                 elif rep in fichiers:
                     valida="no"
                     while valida!="ok":
-                        repsql=[]
                         repname=rep
                         print(colored("Taper shutdown pour éteindre"))
                         repmdp=input("Taper votre mot de passe : ")
