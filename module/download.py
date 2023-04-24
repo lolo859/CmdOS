@@ -16,5 +16,7 @@ def execute(adresse,displaysplit,rep):
             print(colored("La page web n'existe pas","yellow",attrs=["bold"]))
         except UnicodeDecodeError:
             pass
+        except:
+            print(colored("Vous devez connecté à internet pour utiliser ce module","red"))
     else:
         print(colored("La commande n'est pas bien formulée","red",attrs=["bold"]))
