@@ -8,15 +8,12 @@ from os.path import isfile, join
 import os.path
 import os
 from random import random
-#from xml.sax.xmlreader import AttributesImpl
 from termcolor import colored
-import getpass
 import requests as req
-import cmd_fonction as cmdf
+import cmd_fonction
 from datetime import datetime
 from ftplib import FTP
 import ftplib
-import uuid
 import subprocess
 import sys
 import webbrowser
@@ -25,7 +22,7 @@ import indecode
 import psycopg2
 import shutil
 import platform
-cmdf.clear()
+cmd_fonction.clear()
 #########################################################################
 #Admin, commande
 #########################################################################
@@ -34,7 +31,7 @@ if (len(sys.argv)==2 and sys.argv[1]=="admin") or (len(sys.argv)==1 and sys.argv
 else:
     admin=0
 a=0
-help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"+"\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nexecute - permet d'éxécuter des fonctions exterieures au système"+"\nunlog - déconnecte l'utilisateur"+"\nmkdir - crée un dossier"
+help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"+"\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\ndel - supprimer un fichier / dossier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nexecute - permet d'éxécuter des fonctions exterieures au système"+"\nunlog - déconnecte l'utilisateur"+"\nmkdir - crée un dossier"
 com={
      "help":"help - Afficher la liste des commandes :\n   help <commande>",
      "info":"info - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app",
@@ -43,6 +40,7 @@ com={
      "dir":"dir - permet de voir les fichiers/dossiers",
      "user":"user - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage",
      "ren":"ren - renomer un fichier",
+     "del":"del - supprimer un fichier / dossier",
      "update":"update :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible",
      "admin":"admin - active ou désactive le mode admin",
      "log":"log - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
@@ -66,11 +64,12 @@ app={"random":"0",
      "download":"0",
      "prompt":"0"}
 ############################################
-#Import app depuis txt
+#Import app depuis txt et adresseapp
 ############################################
+adresseapp=os.path.realpath(__file__)
+adresseapp=os.path.dirname(adresseapp)
 def appinitext(repname):
-    adresseapp=os.path.realpath(__file__)
-    adresseapp=os.path.dirname(adresseapp)
+    global adresseapp
     if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/random.txt"):
         randomtext=open(adresseapp+"/user/"+repname+"/save_module/random.txt","w")
         randomtext.write(app["random"])
@@ -185,8 +184,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.8 - Basé en Python",
-      "system":"CmdOS v2.8 - Basé en Python",
+info={"sys":"CmdOS v2.9 - Basé en Python",
+      "system":"CmdOS v2.9 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -214,7 +213,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.8""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.9""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -226,7 +225,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.8"
+version="2.9"
 invit=0
 ##########################
 #Fonction Cmd
@@ -235,7 +234,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
 #################################
 #Variable, module
 #################################
-    global adresse,app,mdptext,repmdp,connect,version,a
+    global adresse,app,mdptext,repmdp,connect,version,a,adresseapp
     log=["Voici les logs :"]
     store="Bienvenue dans le store de CmdOS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
@@ -397,7 +396,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                 admin1=rep.split()
                 if displaysplit==1:
                     Result.split()
-                if len(admin1)==2 and cmdf.connect()==True:
+                if len(admin1)==2 and cmd_fonction.connect()==True:
                     if admin1[1]=="on":
                         if admin==0:
                             print("Vous êtes sur le point de passer en mode admin.\n\nEn tapant votre mot de passe, vous prenez conscience que :\n1)Vous vous engagez à ne pas abusez des pouvoirs qu'il vous confère\n2)Un grand pouvoir implique de grandes responsabilités\n3)Vous serez admin sur tous les appareils où vous êtes connectés\n")
@@ -445,7 +444,15 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     if supr[1] in fichiers:
                         del_1=adresse+"/"+supr[1]
                         try:
-                            os.remove(del_1)
+                            if not os.path.isdir(del_1):
+                                os.remove(del_1)
+                            elif os.path.isdir(del_1) and os.listdir(del_1)==[]:
+                                os.rmdir(del_1)
+                            elif os.path.isdir(del_1) and not os.listdir(del_1)==[]:
+                                shutil.rmtree(del_1)
+                            else:
+                                i=Result(text="Une erreur est survenue, vérifier que vous avez les permissions pour supprimer ce ficher",rt="error",module="system")
+                                i.print()
                         except:
                             i=Result(text="Une erreur est survenue, vérifier que vous avez les permissions pour supprimer ce ficher",rt="error",module="system")
                             i.print()
@@ -562,7 +569,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                 if install in app: 
                     app.update({install:"1"})
                     if charginstall==1:
-                        cmdf.charg(0.3,colored("Installation du module...","blue",attrs=["bold"]))
+                        cmd_fonction.charg(0.3,colored("Installation du module...","blue",attrs=["bold"]))
                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                         print("""Taper "help" pour plus d'information""")
                     install2=colored("Le module ","blue",attrs=["bold"])+colored(install,"blue",attrs=["bold","underline"])+colored(" a bien été installé","blue",attrs=["bold"])
@@ -570,52 +577,52 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     i.print()
                     if install=="random":
                         import module.random
-                        appt=open("user/"+repname+"/save_module/random.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/random.txt","w")
                         appt.write(app.get("random"))
                         appt.close()
                     if install=="time":
                         import module.time
-                        appt=open("user/"+repname+"/save_module/time.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/time.txt","w")
                         appt.write(app.get("time"))
                         appt.close()
                     if install=="music":
                         import module.music
-                        appt=open("user/"+repname+"/save_module/music.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/music.txt","w")
                         appt.write(app.get("music"))
                         appt.close()
                     if install=="uuid":
                         import module.uuid
-                        appt=open("user/"+repname+"/save_module/uuid.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/uuid.txt","w")
                         appt.write(app.get("uuid"))
                         appt.close()
                     if install=="image":
                         import module.image
-                        appt=open("user/"+repname+"/save_module/image.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/image.txt","w")
                         appt.write(app.get("image"))
                         appt.close()
                     if install=="browser":
                         import module.browser
-                        appt=open("user/"+repname+"/save_module/browser.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/browser.txt","w")
                         appt.write(app.get("browser"))
                         appt.close()
                     if install=="print":
                         import module.print
-                        appt=open("user/"+repname+"/save_module/print.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/print.txt","w")
                         appt.write(app.get("print"))
                         appt.close()
                     if install=="maths":
                         import module.maths
-                        appt=open("user/"+repname+"/save_module/maths.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/maths.txt","w")
                         appt.write(app.get("maths"))
                         appt.close()
                     if install=="download":
                         import module.download
-                        appt=open("user/"+repname+"/save_module/download.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/download.txt","w")
                         appt.write(app.get("download"))
                         appt.close()
                     if install=="prompt":
                         import module.prompt
-                        appt=open("user/"+repname+"/save_module/prompt.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/prompt.txt","w")
                         appt.write(app.get("prompt"))
                         appt.close()
                 else:
@@ -641,7 +648,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
 #Shell
 #################################
         elif rep=="shutdown" or rep=="sh" or rep=="shell":
-            cmdf.clear()
+            cmd_fonction.clear()
             sys.exit()
 #################################
 #Info
@@ -675,43 +682,43 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     i=Result(uninstall1,"stdout")
                     i.print()
                     if uninstall=="random":
-                        appt=open("user/"+repname+"/save_module/random.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/random.txt","w")
                         appt.write(app.get("random"))
                         appt.close()
                     if uninstall=="time":
-                        appt=open("user/"+repname+"/save_module/time.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/time.txt","w")
                         appt.write(app.get("time"))
                         appt.close()
                     if uninstall=="music":
-                        appt=open("user/"+repname+"/save_module/music.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/music.txt","w")
                         appt.write(app.get("music"))
                         appt.close()
                     if uninstall=="uuid":
-                        appt=open("user/"+repname+"/save_module/uuid.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/uuid.txt","w")
                         appt.write(app.get("uuid"))
                         appt.close()
                     if uninstall=="image":
-                        appt=open("user/"+repname+"/save_module/image.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/image.txt","w")
                         appt.write(str(app.get("image")))
                         appt.close()
                     if uninstall=="browser":
-                        appt=open("user/"+repname+"/save_module/browser.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/browser.txt","w")
                         appt.write(str(app.get("browser")))
                         appt.close()
                     if uninstall=="print":
-                        appt=open("user/"+repname+"/save_module/print.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/print.txt","w")
                         appt.write(str(app.get("print")))
                         appt.close()
                     if uninstall=="maths":
-                        appt=open("user/"+repname+"/save_module/maths.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/maths.txt","w")
                         appt.write(str(app.get("maths")))
                         appt.close()
                     if uninstall=="download":
-                        appt=open("user/"+repname+"/save_module/download.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/download.txt","w")
                         appt.write(str(app.get("download")))
                         appt.close()
                     if uninstall=="prompt":
-                        appt=open("user/"+repname+"/save_module/prompt.txt","w")
+                        appt=open(adresseapp+"/user/"+repname+"/save_module/prompt.txt","w")
                         appt.write(str(app.get("prompt")))
                         appt.close()
                 else:
@@ -735,7 +742,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     i.print()
                 elif len(user)==2:
                     if type(user[1])==str:
-                        if user[1]=="name" and cmdf.connect()==True:
+                        if user[1]=="name" and cmd_fonction.connect()==True:
                             answer=input("Taper votre nouveau nom d'utilisateur (pas plus de 50 caractères) : ")
                             try:
                                 if not len(answer)>=50:
@@ -744,7 +751,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                                     commandsql="UPDATE settings SET nom='"+str(answer)+"' WHERE nom='"+str(repname)+"';"
                                     cur.execute(commandsql)
                                     connsql.commit()
-                                    os.rename("user/"+repname,"user/"+answer)
+                                    os.rename(adresseapp+"/user/"+repname,adresseapp+"/user/"+answer)
                                     adr=adresse.split("/")
                                     num=len(adr)-1
                                     adr[num]=answer
@@ -756,7 +763,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                             except psycopg2.errors.UniqueViolation:
                                 i=Result("Le nom d'utilisateur est déja pris",rt="error",module="user")
                                 i.print()
-                        elif user[1]=="password" and cmdf.connect()==True:
+                        elif user[1]=="password" and cmd_fonction.connect()==True:
                             answer=input("Taper votre nouveau mot de passe (pas plus de 50 caractères) : ")
                             if not len(answer)>=50:
                                 commandsql="UPDATE utilisateur SET mdp='"+str(indecode.code(answer))+"' WHERE nom='"+str(repname)+"';"
@@ -772,7 +779,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                                 shutil.rmtree(adresseuser)
                                 a=1
                                 return
-                        elif user[1]=="delete"  and cmdf.connect()==True:
+                        elif user[1]=="delete"  and cmd_fonction.connect()==True:
                             answer=input("Voulez vous vraiment supprimer votre compte ? (o/n) : ")
                             if answer=="o":
                                 shutil.rmtree(adresseuser)
@@ -784,7 +791,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                                 connsql.commit()
                                 a=1
                                 return
-                        elif user[1]=="reset" and cmdf.connect()==True:
+                        elif user[1]=="reset" and cmd_fonction.connect()==True:
                             key=indecode.generate_key()
                             commandsql="UPDATE utilisateur SET mdp='"+str(indecode.code(mdpt,key))+"',key='"+key+"' WHERE nom='"+str(repname)+"';"
                             i=Result("Votre clé de cryptage à bien été changé","stdout")
@@ -811,14 +818,14 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     print(update)
                 if len(update)==2:    
                     if update[1]=="upgrade":
-                        if cmdf.connect()==True:
+                        if cmd_fonction.connect()==True:
                             i=Result(text="Vous allez télécharger le fichier zip contenant l'assistant pour mettre à jour CmdOS",rt="important")
                             i.print()
                             webbrowser.open("https://github.com/lolo859/get-cmdos/archive/refs/heads/main.zip")
                         else:
                             i=Result("Vous devez être connecté à internet pour mettre à jour CmdOS","error",module="update")
                             i.print()
-                    elif update[1]=="check" and cmdf.connect()==True:
+                    elif update[1]=="check" and cmd_fonction.connect()==True:
                         versiontxt=req.get("https://biotech-online.pagesperso-orange.fr/Mathias/cmdversion",allow_redirects=True)
                         open("cmdversion.txt","wb").write(versiontxt.content)
                         vertxt=open("cmdversion.txt","r")
@@ -924,7 +931,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
 #Clear
 #################################
         elif rep=="clear":
-            cmdf.clear()
+            cmd_fonction.clear()
             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
             print("""Taper "help" pour plus d'information""")
 #################################
@@ -937,7 +944,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
 #Godmode
 #################################
         elif rep=="godmode" and invit==0:
-            if admin==1 and cmdf.connect()==True:
+            if admin==1 and cmd_fonction.connect()==True:
                 print(colored("Le godmode est un ensemble de fonctions et de paramètres conçus pour les dévéloppeurs, n'y toucher seulement si vous savez ce que vous faites","yellow",attrs=["bold"]))
                 godmode1=input(colored("Quelle fonction voulez vous activer/utilisez ? : ","blue",attrs=["bold"]))
                 if godmode1=="sys.variables":
@@ -950,7 +957,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     print("godmode1='"+godmode1+"'")
                     print("adresseuser='"+adresseuser+"'")
                     print("invit='"+str(invit)+"'")
-                if godmode1=="sys.store.install.vanish_loading":
+                if godmode1=="sys.cmd.store.install.vanish_loading":
                     print("Cette fonction permet de masquer le chargement lors de l'installation d'un module")
                     input("Taper entrer pour exécuter")
                     vanish_loading="Entrer votre choix (valeur actuelle : "+str(charginstall)+") : "
@@ -982,10 +989,10 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     if godmode2=="login":
                         login()
                     if godmode2=="clear":
-                        cmdf.clear()
+                        cmd_fonction.clear()
                     if godmode2=="connect":
-                        cmdf.connect()
-                if godmode1=="sys.protocol.cmd.display_split":
+                        cmd_fonction.connect()
+                if godmode1=="sys.cmd.display_split":
                     print("Cette fonction permet d'afficher le split de la variable rep lors du traitement de la commande")
                     input("Taper entrer pour exécuter")
                     display_split="Entrer votre choix (valeur actuelle : "+str(displaysplit)+") : "
@@ -997,7 +1004,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                         connsql.commit()
                     else:
                         print("La valeur entrée n'est pas correcte")
-                if godmode1=="sys.report":
+                if godmode1=="sys.cmd.report":
                     print("Cette fonction permet d'activer/désactiver l'enregistrement des commandes sur le serveur de support")
                     input("Taper entrer pour exécuter")
                     report="Entrer votre choix (valeur actuelle : "+str(logserver)+") : "
@@ -1013,6 +1020,33 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     print("Cette fonction fait la liste des classes systèmes")
                     input("Taper entrer pour exécuter")
                     print("Result() - permet l'affichage des résultats / erreurs des différentes commandes")
+                if godmode1=="sys.protocol.reload":
+                    print("Cette fonction réimporte les différents dépendances")
+                    input("Taper entrer pour exécuter")
+                    reload=input("Entrer votre choix (module/cmd_fonction) : ")
+                    if reload=="module":
+                        if app["random"]=="1":
+                            import module.random
+                        if app["time"]=="1":
+                            import module.time
+                        if app["music"]=="1":
+                            import module.music
+                        if app["uuid"]=="1":
+                            import module.uuid
+                        if app["image"]=="1":
+                            import module.image
+                        if app["browser"]=="1":
+                            import module.browser
+                        if app["print"]=="1":
+                            import module.print
+                        if app["maths"]=="1":
+                            import module.maths
+                        if app["download"]=="1":
+                            import module.download
+                        if app["prompt"]=="1":
+                            import module.prompt
+                    # if reload=="cmd_fonction":
+                        # import cmd_fonction
             else:
                 i=Result(module="godmode",rt="error",text="Vous devez être connecté en tant qu'administrateur et à internet pour utiliser le godmode")
                 i.print()
@@ -1095,15 +1129,15 @@ def login():
     adresse=os.path.realpath(__file__)
     adresse=os.path.dirname(adresse)
     valida="no"
-    cmdf.clear()
+    cmd_fonction.clear()
     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
     while True:
         if len(os.listdir(adresse+"/user"))==0:
             compte=input("Vouler vous vous connecter (1), créer un compte (2), activer le mode invité (3) ou annuler (4) ? : ")
-            cmdf.clear()
+            cmd_fonction.clear()
             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
             if compte=="1":
-                if cmdf.connect():
+                if cmd_fonction.connect():
                     valida="no"
                     while valida!="ok":
                         repname=input("Taper votre nom d'utilisateur : ")
@@ -1113,23 +1147,23 @@ def login():
                         cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
                         repsqlset=cur.fetchall()
                         if repsqluser==[]:
-                            cmdf.clear()
+                            cmd_fonction.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                         else:
                             repsqluser=list(repsqluser[0])
                             repsqlset=list(repsqlset[0])
                             if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
-                                os.makedirs("user/"+repname+"/image")
-                                os.makedirs("user/"+repname+"/music")
-                                os.makedirs("user/"+repname+"/save_module")
-                                os.makedirs("user/"+repname+"/download")
+                                os.makedirs(adresseapp+"/user/"+repname+"/image")
+                                os.makedirs(adresseapp+"/user/"+repname+"/music")
+                                os.makedirs(adresseapp+"/user/"+repname+"/save_module")
+                                os.makedirs(adresseapp+"/user/"+repname+"/download")
                                 app=appinitext(repname)
                                 adresse=adresse+"/user/"+repname
                                 adresseuser=adresse
                                 valida="ok"
                             else:
-                                cmdf.clear()
+                                cmd_fonction.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
                     mdpt=indecode.decode(repsqluser[1],repsqluser[3])
@@ -1138,28 +1172,28 @@ def login():
                     logserver=repsqlset[3]
                     charginstall=repsqlset[2]
                     key=repsqluser[3]
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
                     return
                 else:
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print(colored("Vous devez être connecté à internet pour vous connecter","red",attrs=["bold"]))
             elif compte=="2":
-                if cmdf.connect():
+                if cmd_fonction.connect():
                     valida="no"
                     while valida!="ok":
                         repname=input("Entrer un nom d'utilisateur (pas plus de 50 caractères) : ")
                         repmdp=input("Entrer un mot de passe (pas plus de 50 caractères) : ")
                         if not len(repname)>=50 and not len(repmdp)>=50:
                             if repmdp=="shutdown":
-                                cmdf.clear()
+                                cmd_fonction.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le mot de passe ne peut pas être 'shutdown'","red",attrs=["bold"]))
                             elif repname in ["1","2","3","4"]:
-                                cmdf.clear()
+                                cmd_fonction.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le nom d'utilisateur ne peut pas être 1, 2, 3 ou 4","red",attrs=["bold"]))
                             else:
@@ -1171,20 +1205,20 @@ def login():
                                     commandsql="INSERT INTO settings VALUES ('"+str(repname)+"',0,1,1);"
                                     cur.execute(commandsql)
                                     connsql.commit()
-                                    os.makedirs("user/"+repname+"/image")
-                                    os.makedirs("user/"+repname+"/music")
-                                    os.makedirs("user/"+repname+"/save_module")
-                                    os.makedirs("user/"+repname+"/download")
+                                    os.makedirs(adresseapp+"/user/"+repname+"/image")
+                                    os.makedirs(adresseapp+"/user/"+repname+"/music")
+                                    os.makedirs(adresseapp+"/user/"+repname+"/save_module")
+                                    os.makedirs(adresseapp+"/user/"+repname+"/download")
                                     app=appinitext(repname)
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
                                     valida="ok"
                                 except psycopg2.errors.UniqueViolation:
-                                    cmdf.clear()
+                                    cmd_fonction.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le nom d'utilisateur est déja pris","red",attrs=["bold"]))
                         else:
-                            cmdf.clear()
+                            cmd_fonction.clear()
                             print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                             print(colored("Une valeur entrée n'est pas valide","red",attrs=["bold"]))
                     mdpt=repmdp
@@ -1192,13 +1226,13 @@ def login():
                     displaysplit=0
                     logserver=1
                     charginstall=1
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
                     return
                 else:
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print(colored("Vous devez être connecté à internet pour vous connecter","red",attrs=["bold"]))
             elif compte=="3":
@@ -1211,16 +1245,16 @@ def login():
                 repname="Guest"
                 adresseuser=adresse
                 key=indecode.generate_key()
-                cmdf.clear()
+                cmd_fonction.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print("""Taper "help" pour plus d'information""")
                 cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,invit)
                 return
             elif compte=="4":
-                cmdf.clear()
+                cmd_fonction.clear()
                 exit()
             else:
-                cmdf.clear()
+                cmd_fonction.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print(colored("La valeur entrée n'est pas valide","red",attrs=["bold"]))
         else:
@@ -1231,11 +1265,11 @@ def login():
                 for element in range(longueur):
                     print(" "+fichiers[element]+" - se connecter avec ce compte")
                 rep=input("Votre choix : ")
-                cmdf.clear()
+                cmd_fonction.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 if rep=="1":
                     valida="no"
-                    if cmdf.connect():
+                    if cmd_fonction.connect():
                         while valida!="ok":
                             repname=input("Taper votre nom d'utilisateur : ")
                             repmdp=input("Taper votre mot de passe : ")
@@ -1244,7 +1278,7 @@ def login():
                             cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
                             repsqlset=cur.fetchall()
                             if repsqluser==[]:
-                                cmdf.clear()
+                                cmd_fonction.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Le compte n'existe pas","red",attrs=["bold"]))
                             else:
@@ -1252,40 +1286,40 @@ def login():
                                 repsqlset=list(repsqlset[0])
                                 if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
                                     try:
-                                        os.makedirs("user/"+repname+"/image")
-                                        os.makedirs("user/"+repname+"/music")
-                                        os.makedirs("user/"+repname+"/save_module")
-                                        os.makedirs("user/"+repname+"/download")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/image")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/music")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/save_module")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/download")
                                         app=appinitext(repname)
                                         adresse=adresse+"/user/"+repname
                                         adresseuser=adresse
                                         mdpt=repmdp
                                         valida="ok"
                                     except FileExistsError:
-                                        cmdf.clear()
+                                        cmd_fonction.clear()
                                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                         print(colored("Le compte est déja ajouté","red",attrs=["bold"]))
                                 else:
-                                    cmdf.clear()
+                                    cmd_fonction.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
                     else:
-                        cmdf.clear()
+                        cmd_fonction.clear()
                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                         print(colored("Vous devez être connecté à internet pour vous connecter","red",attrs=["bold"]))
                 elif rep=="2":
                     valida="no"
-                    if cmdf.connect():
+                    if cmd_fonction.connect():
                         while valida!="ok":
                             repname=input("Entrer un nom d'utilisateur (pas plus de 50 caractères) : ")
                             repmdp=input("Entrer un mot de passe (pas plus de 50 caractères) : ")
                             if not len(repname)>=50 and not len(repmdp)>=50:
                                 if repmdp=="shutdown":
-                                    cmdf.clear()
+                                    cmd_fonction.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le mot de passe ne peut pas être 'shutdown'","red",attrs=["bold"]))
                                 elif repname in ["1","2","3","4"]:
-                                    cmdf.clear()
+                                    cmd_fonction.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le nom d'utilisateur ne peut pas être 1, 2, 3 ou 4","red",attrs=["bold"]))
                                 else:
@@ -1297,10 +1331,10 @@ def login():
                                         commandsql="INSERT INTO settings VALUES ('"+str(repname)+"',0,1,1);"
                                         cur.execute(commandsql)
                                         connsql.commit()
-                                        os.makedirs("user/"+repname+"/image")
-                                        os.makedirs("user/"+repname+"/music")
-                                        os.makedirs("user/"+repname+"/save_module")
-                                        os.makedirs("user/"+repname+"/download")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/image")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/music")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/save_module")
+                                        os.makedirs(adresseapp+"/user/"+repname+"/download")
                                         app=appinitext(repname)
                                         adresse=adresse+"/user/"+repname
                                         adresseuser=adresse
@@ -1313,15 +1347,15 @@ def login():
                                         repsqlset=list(repsqlset[0])
                                         valida="ok"
                                     except psycopg2.errors.UniqueViolation:
-                                        cmdf.clear()
+                                        cmd_fonction.clear()
                                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                         print(colored("Le nom d'utilisateur est déja pris","red",attrs=["bold"]))
                             else:
-                                cmdf.clear()
+                                cmd_fonction.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Une valeur entrée n'est pas valide","red",attrs=["bold"]))
                     else:
-                        cmdf.clear()
+                        cmd_fonction.clear()
                         print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                         print(colored("Vous devez être connecté à internet pour vous connecter","red",attrs=["bold"]))
                 elif rep=="3":
@@ -1334,13 +1368,13 @@ def login():
                     repname="Guest"
                     adresseuser=adresse
                     key=indecode.generate_key()
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,invit)
                     return
                 elif rep=="4":
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     exit()
                 elif rep in fichiers:
                     valida="no"
@@ -1349,7 +1383,7 @@ def login():
                         print(colored("Taper shutdown pour éteindre"))
                         repmdp=input("Taper votre mot de passe : ")
                         if not repmdp=="shutdown":
-                            if cmdf.connect():
+                            if cmd_fonction.connect():
                                 cur.execute("SELECT * FROM utilisateur WHERE nom='"+repname+"';")
                                 repsqluser=cur.fetchall()
                                 cur.execute("SELECT * FROM settings WHERE nom='"+repname+"';")
@@ -1364,18 +1398,18 @@ def login():
                                     valida="ok"
                                     break
                                 else:
-                                    cmdf.clear()
+                                    cmd_fonction.clear()
                                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                     print(colored("Le mot de passe n'est pas correct","red",attrs=["bold"]))
                             else:
-                                cmdf.clear()
+                                cmd_fonction.clear()
                                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                                 print(colored("Vous devez être connecté à internet pour vous connecter","red",attrs=["bold"]))
                                 break
                         else:
                             return
                 else:
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print(colored("La valeur entrée n'est pas valide","red",attrs=["bold"]))
                 if valida=="ok":
@@ -1384,7 +1418,7 @@ def login():
                     logserver=repsqlset[3]
                     charginstall=repsqlset[2]
                     key=repsqluser[3]
-                    cmdf.clear()
+                    cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     a=0
@@ -1402,4 +1436,4 @@ while True :
 connect.quit()
 cur.close()
 connsql.close()
-cmdf.clear()
+cmd_fonction.clear()
