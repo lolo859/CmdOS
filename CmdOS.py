@@ -31,7 +31,7 @@ if (len(sys.argv)==2 and sys.argv[1]=="admin") or (len(sys.argv)==1 and sys.argv
 else:
     admin=0
 a=0
-help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"+"\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\ndel - supprimer un fichier / dossier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nexecute - permet d'éxécuter des fonctions exterieures au système"+"\nunlog - déconnecte l'utilisateur"+"\nmkdir - crée un dossier"
+help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"+"\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\ndel - supprimer un fichier / dossier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche l'état des logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   enable - active les logs""\n   disable - désactive les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nexecute - permet d'éxécuter des fonctions exterieures au système"+"\nunlog - déconnecte l'utilisateur"+"\nmkdir - crée un dossier"
 com={
      "help":"help - Afficher la liste des commandes :\n   help <commande>",
      "info":"info - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app",
@@ -43,7 +43,7 @@ com={
      "del":"del - supprimer un fichier / dossier",
      "update":"update :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible",
      "admin":"admin - active ou désactive le mode admin",
-     "log":"log - affiche les logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   show - affiche les logs""\n   delete - supprime les logs",
+     "log":"log - affiche l'état des logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   enable - active les logs""\n   disable - désactive les logs""\n   delete - supprime les logs",
      "detail":"detail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result",
      "shell":"shell (version raccourci : sh) - ouvre le cmd",
      "execute":"execute - permet d'éxécuter des fonctions exterieures au système",
@@ -184,8 +184,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.9 - Basé en Python",
-      "system":"CmdOS v2.9 - Basé en Python",
+info={"sys":"CmdOS v2.10 - Basé en Python",
+      "system":"CmdOS v2.10 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -207,13 +207,13 @@ adresse=os.path.dirname(adresse)
 if not os.path.exists(adresse)==True:
     while not os.path.exists(adresse)==True:
         adresse=input("Le système n'a pas démmarrer correctement, veulliez rentrer le chemin absolu du dossier ou se trouve le fichier CmdOS.py : ")
-if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/app") and os.path.exists(adresse+"/user")):
-    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe:  __pycache__, app, user, module et README.md.","red",attrs=["bold"]))
+if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/app") and os.path.exists(adresse+"/user") and os.path.exists(adresse+"/logs")):
+    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe:  __pycache__, app, user, module, logs et README.md.","red",attrs=["bold"]))
     quit()
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.9""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.10""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -225,17 +225,16 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.9"
+version="2.10"
 invit=0
 ##########################
 #Fonction Cmd
 ##########################
-def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,invit=0):
+def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log,invit=0):
 #################################
 #Variable, module
 #################################
     global adresse,app,mdptext,repmdp,connect,version,a,adresseapp
-    log=["Voici les logs :"]
     store="Bienvenue dans le store de CmdOS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
     while True:
         if invit==0:
@@ -297,30 +296,36 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
         try:
             if admin==1:
                 heure=str(datetime.now())
+                id2=str(secure_id.sid2())
+                id=id2+"-"+repname
                 if logserver==1:
-                    id=str(secure_id.sid2())+"-"+repname
                     contenttxt=open(adresseuser+"/content.txt","w")
                     contenttxt.write(indecode.code(repname+"(admin)@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep,key))
                     contenttxt.close()
                     contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
                     contenttxt.close()
-                    log.append(id+" "+colored(repname,"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
-                else:
-                    log.append(colored(repname,"green",attrs=["bold"])+colored("(admin) ","red",attrs=["bold"])+colored(heure,"blue",attrs=["bold"])+" "+rep)
+                if log==1:
+                    logadd=id2+" "+repname+"(admin)@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep
+                    logtxt=open(adresseapp+"/logs/"+repname+".txt","a")
+                    logtxt.write(logadd+"\n")
+                    logtxt.close()
             else:
                 heure=str(datetime.now())
+                id2=str(secure_id.sid2())
+                id=id2+"-"+repname
                 if logserver==1:
-                    id=str(secure_id.sid2())+"-"+repname
                     contenttxt=open(adresseuser+"/content.txt","w")
                     contenttxt.write(indecode.code(repname+"@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep,key))
                     contenttxt.close()
                     contenttxt=open(adresseuser+"/content.txt","rb")
                     connect.storbinary("STOR "+id,contenttxt)
                     contenttxt.close()
-                    log.append(id+" "+colored(repname,"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
-                else:
-                    log.append(colored(repname,"green",attrs=["bold"])+" "+colored(heure,"blue",attrs=["bold"])+" "+rep)
+                if log==1:
+                    logadd=id2+" "+repname+"@"+platform.uname().node+"."+platform.uname().system+" "+heure+" "+version+" "+rep
+                    logtxt=open(adresseapp+"/logs/"+repname+".txt","a")
+                    logtxt.write(logadd+"\n")
+                    logtxt.close()
         except ftplib.error_temp:
             host="ftp-cmdos.alwaysdata.net"
             user="cmdos"
@@ -541,15 +546,35 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     if displaysplit==1:
                         Result.split()
                     if len(log1)==2 and type(log1[1])==str:
-                        if log1[1]=="show":
-                            for lettre in log:
-                                i=Result(lettre,rt="stdout")
+                        if log1[1]=="enable":
+                            logtxt=open("user/"+repname+"/log.txt","w")
+                            logtxt.write("1")
+                            logtxt.close()
+                            log=1
+                            i=Result("Les logs sont activés sur votre compte local","important")
+                            i.print()
+                        elif log1[1]=="disable":
+                            logtxt=open("user/"+repname+"/log.txt","w")
+                            logtxt.write("0")
+                            logtxt.close()
+                            log=0
+                            i=Result("Les logs sont désactivés sur votre compte local","important")
+                            i.print()
                         elif log1[1]=="delete":
-                            log=["Voici les logs :"]
-                            i.Result("Les logs ont bien été supprimé","important")
+                            logtxt=open("logs/"+repname+".txt","w")
+                            logtxt.write("")
+                            logtxt.close()
+                            i=Result("Les logs ont bien été supprimé","important")
                             i.print()
                         else:
                             i=Result("La commande est mal formulée","error",module="log")
+                            i.print()
+                    elif len(log1)==1:
+                        if log==1:
+                            i=Result("Les logs sont activés sur votre compte local","important")
+                            i.print()
+                        else:
+                            i=Result("Les logs sont déactivés sur votre compte local","important")
                             i.print()
                     else:
                         i=Result("La commande est mal formulée","error",module="log")
@@ -777,6 +802,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                             answer=input("Voulez vous vraiment déconnecter votre compte ? (o/n) : ")
                             if answer=="o":
                                 shutil.rmtree(adresseuser)
+                                os.remove("logs/"+repname+".txt")
                                 a=1
                                 return
                         elif user[1]=="delete"  and cmd_fonction.connect()==True:
@@ -789,6 +815,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                                 commandsql="DELETE FROM settings WHERE nom='"+repname+"';"
                                 cur.execute(commandsql)
                                 connsql.commit()
+                                os.remove("logs/"+repname+".txt")
                                 a=1
                                 return
                         elif user[1]=="reset" and cmd_fonction.connect()==True:
@@ -957,6 +984,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     print("godmode1='"+godmode1+"'")
                     print("adresseuser='"+adresseuser+"'")
                     print("invit='"+str(invit)+"'")
+                    print("log="+str(log)+"")
                 if godmode1=="sys.cmd.store.install.vanish_loading":
                     print("Cette fonction permet de masquer le chargement lors de l'installation d'un module")
                     input("Taper entrer pour exécuter")
@@ -985,7 +1013,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,i
                     if godmode2=="appinitext":
                         app=appinitext(repname)
                     if godmode2=="cmd":
-                        cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
+                        cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log)
                     if godmode2=="login":
                         login()
                     if godmode2=="clear":
@@ -1158,6 +1186,11 @@ def login():
                                 os.makedirs(adresseapp+"/user/"+repname+"/music")
                                 os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                 os.makedirs(adresseapp+"/user/"+repname+"/download")
+                                logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
+                                logtxt.close()
+                                logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
+                                logtxt.write("1")
+                                logtxt.close()
                                 app=appinitext(repname)
                                 adresse=adresse+"/user/"+repname
                                 adresseuser=adresse
@@ -1172,10 +1205,11 @@ def login():
                     logserver=repsqlset[3]
                     charginstall=repsqlset[2]
                     key=repsqluser[3]
+                    log=1
                     cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
-                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
+                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log)
                     return
                 else:
                     cmd_fonction.clear()
@@ -1209,6 +1243,11 @@ def login():
                                     os.makedirs(adresseapp+"/user/"+repname+"/music")
                                     os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                     os.makedirs(adresseapp+"/user/"+repname+"/download")
+                                    logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
+                                    logtxt.close()
+                                    logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
+                                    logtxt.write("1")
+                                    logtxt.close()
                                     app=appinitext(repname)
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
@@ -1226,10 +1265,11 @@ def login():
                     displaysplit=0
                     logserver=1
                     charginstall=1
+                    log=1
                     cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
-                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
+                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log)
                     return
                 else:
                     cmd_fonction.clear()
@@ -1243,12 +1283,13 @@ def login():
                 charginstall=0
                 invit=1
                 repname="Guest"
+                log=0
                 adresseuser=adresse
                 key=indecode.generate_key()
                 cmd_fonction.clear()
                 print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                 print("""Taper "help" pour plus d'information""")
-                cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,invit)
+                cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log,invit)
                 return
             elif compte=="4":
                 cmd_fonction.clear()
@@ -1290,10 +1331,16 @@ def login():
                                         os.makedirs(adresseapp+"/user/"+repname+"/music")
                                         os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                         os.makedirs(adresseapp+"/user/"+repname+"/download")
+                                        logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
+                                        logtxt.close()
+                                        logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
+                                        logtxt.write("1")
+                                        logtxt.close()
                                         app=appinitext(repname)
                                         adresse=adresse+"/user/"+repname
                                         adresseuser=adresse
                                         mdpt=repmdp
+                                        log=1
                                         valida="ok"
                                     except FileExistsError:
                                         cmd_fonction.clear()
@@ -1335,6 +1382,12 @@ def login():
                                         os.makedirs(adresseapp+"/user/"+repname+"/music")
                                         os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                         os.makedirs(adresseapp+"/user/"+repname+"/download")
+                                        logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
+                                        logtxt.close()
+                                        logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
+                                        logtxt.write("1")
+                                        logtxt.close()
+                                        log=1
                                         app=appinitext(repname)
                                         adresse=adresse+"/user/"+repname
                                         adresseuser=adresse
@@ -1366,12 +1419,13 @@ def login():
                     charginstall=0
                     invit=1
                     repname="Guest"
+                    log=0
                     adresseuser=adresse
                     key=indecode.generate_key()
                     cmd_fonction.clear()
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
-                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,invit)
+                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log,invit)
                     return
                 elif rep=="4":
                     cmd_fonction.clear()
@@ -1395,6 +1449,11 @@ def login():
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
                                     app=appinitext(repname)
+                                    logtxt=open("user/"+repname+"/log.txt")
+                                    data=logtxt.readlines()
+                                    data=data[0]
+                                    log=int(data)
+                                    logtxt.close()
                                     valida="ok"
                                     break
                                 else:
@@ -1422,7 +1481,7 @@ def login():
                     print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
                     print("""Taper "help" pour plus d'information""")
                     a=0
-                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key)
+                    cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log)
                     return
 while True :
     login()
