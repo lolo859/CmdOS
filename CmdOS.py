@@ -184,8 +184,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.10.1 - Basé en Python",
-      "system":"CmdOS v2.10.1 - Basé en Python",
+info={"sys":"CmdOS v2.10.2 - Basé en Python",
+      "system":"CmdOS v2.10.2 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -213,7 +213,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.10.1""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.10.2""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -225,7 +225,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.10.1"
+version="2.10.2"
 invit=0
 ##########################
 #Fonction Cmd
@@ -547,14 +547,14 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                         Result.split()
                     if len(log1)==2 and type(log1[1])==str:
                         if log1[1]=="enable":
-                            logtxt=open("user/"+repname+"/log.txt","w")
+                            logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
                             logtxt.write("1")
                             logtxt.close()
                             log=1
                             i=Result("Les logs sont activés sur votre compte local","important")
                             i.print()
                         elif log1[1]=="disable":
-                            logtxt=open("user/"+repname+"/log.txt","w")
+                            logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
                             logtxt.write("0")
                             logtxt.close()
                             log=0
@@ -1449,7 +1449,7 @@ def login():
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
                                     app=appinitext(repname)
-                                    logtxt=open("user/"+repname+"/log.txt")
+                                    logtxt=open(adresseapp+"/user/"+repname+"/log.txt")
                                     data=logtxt.readlines()
                                     data=data[0]
                                     log=int(data)
