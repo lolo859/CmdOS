@@ -184,8 +184,8 @@ def appinitext(repname):
 ############################################
 #Info
 ############################################
-info={"sys":"CmdOS v2.10 - Basé en Python",
-      "system":"CmdOS v2.10 - Basé en Python",
+info={"sys":"CmdOS v2.10.1 - Basé en Python",
+      "system":"CmdOS v2.10.1 - Basé en Python",
       "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
       "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
       "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
@@ -213,7 +213,7 @@ if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycac
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.10""","green",attrs=["bold"])) 
+print(colored("""CmdOS v2.10.1""","green",attrs=["bold"])) 
 host="ftp-cmdos.alwaysdata.net"
 user="cmdos"
 password="CmdOS2008)"
@@ -225,7 +225,7 @@ cur = connsql.cursor()
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.10"
+version="2.10.1"
 invit=0
 ##########################
 #Fonction Cmd
@@ -802,7 +802,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                             answer=input("Voulez vous vraiment déconnecter votre compte ? (o/n) : ")
                             if answer=="o":
                                 shutil.rmtree(adresseuser)
-                                os.remove("logs/"+repname+".txt")
+                                os.remove(adresseapp+"/logs/"+repname+".txt")
                                 a=1
                                 return
                         elif user[1]=="delete"  and cmd_fonction.connect()==True:
@@ -815,7 +815,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                                 commandsql="DELETE FROM settings WHERE nom='"+repname+"';"
                                 cur.execute(commandsql)
                                 connsql.commit()
-                                os.remove("logs/"+repname+".txt")
+                                os.remove(adresseapp+"/logs/"+repname+".txt")
                                 a=1
                                 return
                         elif user[1]=="reset" and cmd_fonction.connect()==True:
@@ -853,7 +853,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                             i=Result("Vous devez être connecté à internet pour mettre à jour CmdOS","error",module="update")
                             i.print()
                     elif update[1]=="check" and cmd_fonction.connect()==True:
-                        versiontxt=req.get("https://biotech-online.pagesperso-orange.fr/Mathias/cmdversion",allow_redirects=True)
+                        versiontxt=req.get("https://cmdos.alwaysdata.net/cmdversion.txt",allow_redirects=True)
                         open("cmdversion.txt","wb").write(versiontxt.content)
                         vertxt=open("cmdversion.txt","r")
                         verlist=vertxt.readlines()
