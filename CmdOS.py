@@ -19,6 +19,8 @@ import sys
 import webbrowser
 import secure_id
 import indecode
+import urllib
+import zipfile
 import psycopg2
 import shutil
 import platform
@@ -31,11 +33,10 @@ if (len(sys.argv)==2 and sys.argv[1]=="admin") or (len(sys.argv)==1 and sys.argv
 else:
     admin=0
 a=0
-help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\ninfo - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app"+"\nstore - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\ndel - supprimer un fichier / dossier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche l'état des logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   enable - active les logs""\n   disable - désactive les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nexecute - permet d'éxécuter des fonctions exterieures au système"+"\nunlog - déconnecte l'utilisateur"+"\nmkdir - crée un dossier"
+help="Voici la liste des commandes de CmdOS :"+"\nhelp - Afficher la liste des commandes :\n   help <commande>"+"\nstore - Affiche les différents modules installables : \n   install <module> - installer un module \n   uninstall <module> - desinstaller un module""\n   list - affiche les différents modules installés""\n   info <module> - affiche les informations du module"+"\ncd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent"+"\ndir - permet de voir les fichiers/dossiers"+"\nuser - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage"+"\nren - renomer un fichier"+"\ndel - supprimer un fichier / dossier"+"\nupdate :""\n   upgrade - mettre à jour le système en téléchargant la dernière version""\n   check - vérifier si une nouvelle mise à jour est disponible"+"\nadmin - active ou désactive le mode admin"+"\nlog - affiche l'état des logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   enable - active les logs""\n   disable - désactive les logs""\n   delete - supprime les logs"+"\ndetail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result"+"\nshell (version raccourci : sh) - ouvre le cmd"+"\nunlog - déconnecte l'utilisateur"+"\nmkdir - crée un dossier"
 com={
      "help":"help - Afficher la liste des commandes :\n   help <commande>",
-     "info":"info - Afficher les infos sur un programme\n   utliser sys / system pour voir la version du système\n   utiliser 'info app (fichier python)' pour afficher les caractéristiques d'un fichier python du dossier app",
-     "store":"store - Affiche les différentes applications installables : \n   install - installer un module \n   uninstall - desinstaller un module""\n   list - affiche les différents modules installés",
+     "store":"store - Affiche les différents modules installables : \n   install <module> - installer un module \n   uninstall <module> - desinstaller un module""\n   list - affiche les différents modules installés""\n   info <module> - affiche les différentes informations sur un module",
      "cd":"cd - changer de dossier :\n   cd <chemin absolu>\n   cd <dossier à ouvrir>\n   cd .. : ouvre le dossier parent",
      "dir":"dir - permet de voir les fichiers/dossiers",
      "user":"user - Voir vos identifiants :\n   name - modifie votre nom d'utilisateur\n   password - modifie votre mot de passe\n   disconnect - déconnecte votre compte de l'appareil\n   delete - supprime totalement votre compte\n   reset - change votre clé de cryptage",
@@ -46,156 +47,14 @@ com={
      "log":"log - affiche l'état des logs (il faut être connecté en tant qu'administrateur pour utiliser cette commande)""\n   enable - active les logs""\n   disable - désactive les logs""\n   delete - supprime les logs",
      "detail":"detail - affiche les propriétés d'un fichier ou dossier sous forme de os.stat_result",
      "shell":"shell (version raccourci : sh) - ouvre le cmd",
-     "execute":"execute - permet d'éxécuter des fonctions exterieures au système",
      "unlog":"unlog - déconnecte l'utilisateur",
      "mkdir":"mkdir - crée un dossier"
      }
 ############################################
-#App
-############################################
-app={"random":"0",
-     "time":"0",
-     "music":"0",
-     "uuid":"0",
-     "image":"0",
-     "browser":"0",
-     "print":"0",
-     "maths":"0",
-     "download":"0",
-     "prompt":"0"}
-############################################
-#Import app depuis txt et adresseapp
+#adresseapp
 ############################################
 adresseapp=os.path.realpath(__file__)
 adresseapp=os.path.dirname(adresseapp)
-def appinitext(repname):
-    global adresseapp
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/random.txt"):
-        randomtext=open(adresseapp+"/user/"+repname+"/save_module/random.txt","w")
-        randomtext.write(app["random"])
-        randomtext.close()
-    else:
-        randomtext=open(adresseapp+"/user/"+repname+"/save_module/random.txt",'r')
-        data=randomtext.readlines()
-        app.update({"random":str(data[0])})
-        randomtext.close()
-        if data[0]=="1":
-            import module.random
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/time.txt"):
-        timetext=open(adresseapp+"/user/"+repname+"/save_module/time.txt","w")
-        timetext.write(app["time"])
-        timetext.close()
-    else:
-        timetext=open(adresseapp+"/user/"+repname+"/save_module/time.txt",'r')
-        data=timetext.readlines()
-        app.update({"time":str(data[0])})
-        timetext.close()
-        if data[0]=="1":
-            import module.time
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/music.txt"):
-        musictext=open(adresseapp+"/user/"+repname+"/save_module/music.txt","w")
-        musictext.write(app["music"])
-        musictext.close()
-    else:
-        musictext=open(adresseapp+"/user/"+repname+"/save_module/music.txt",'r')
-        data=musictext.readlines()
-        app.update({"music":str(data[0])})
-        musictext.close()
-        if data[0]=="1":
-            import module.music
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/uuid.txt"):
-        uuidtext=open(adresseapp+"/user/"+repname+"/save_module/uuid.txt","w")
-        uuidtext.write(app["uuid"])
-        uuidtext.close()
-    else:
-        uuidtext=open(adresseapp+"/user/"+repname+"/save_module/uuid.txt",'r')
-        data=uuidtext.readlines()
-        app.update({"uuid":str(data[0])})
-        uuidtext.close()
-        if data[0]=="1":
-            import module.uuid
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/image.txt"):
-        imagetext=open(adresseapp+"/user/"+repname+"/save_module/image.txt","w")
-        imagetext.write(app["image"])
-        imagetext.close()
-    else:
-        imagetext=open(adresseapp+"/user/"+repname+"/save_module/image.txt",'r')
-        data=imagetext.readlines()
-        app.update({"image":str(data[0])})
-        imagetext.close()
-        if data[0]=="1":
-            import module.image
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/browser.txt"):
-        browsertext=open(adresseapp+"/user/"+repname+"/save_module/browser.txt","w")
-        browsertext.write(app["browser"])
-        browsertext.close()
-    else:
-        browsertext=open(adresseapp+"/user/"+repname+"/save_module/browser.txt",'r')
-        data=browsertext.readlines()
-        app.update({"browser":str(data[0])})
-        browsertext.close()
-        if data[0]=="1":
-            import module.browser
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/print.txt"):
-        printtext=open(adresseapp+"/user/"+repname+"/save_module/print.txt","w")
-        printtext.write(app["print"])
-        printtext.close()
-    else:
-        printtext=open(adresseapp+"/user/"+repname+"/save_module/print.txt",'r')
-        data=printtext.readlines()
-        app.update({"print":str(data[0])})
-        printtext.close()
-        if data[0]=="1":
-            import module.print
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/maths.txt"):
-        mathstext=open(adresseapp+"/user/"+repname+"/save_module/maths.txt","w")
-        mathstext.write(app["maths"])
-        mathstext.close()
-    else:
-        mathstext=open(adresseapp+"/user/"+repname+"/save_module/maths.txt",'r')
-        data=mathstext.readlines()
-        app.update({"maths":str(data[0])})
-        mathstext.close()
-        if data[0]=="1":
-            import module.maths
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/download.txt"):
-        downloadtext=open(adresseapp+"/user/"+repname+"/save_module/download.txt","w")
-        downloadtext.write(app["download"])
-        downloadtext.close()
-    else:
-        downloadtext=open(adresseapp+"/user/"+repname+"/save_module/download.txt",'r')
-        data=downloadtext.readlines()
-        app.update({"download":str(data[0])})
-        downloadtext.close()
-        if data[0]=="1":
-            import module.download
-    if not os.path.exists(adresseapp+"/user/"+repname+"/save_module/prompt.txt"):
-        prompttext=open(adresseapp+"/user/"+repname+"/save_module/prompt.txt","w")
-        prompttext.write(app["prompt"])
-        prompttext.close()
-    else:
-        prompttext=open(adresseapp+"/user/"+repname+"/save_module/prompt.txt",'r')
-        data=prompttext.readlines()
-        app.update({"prompt":str(data[0])})
-        prompttext.close()
-        if data[0]=="1":
-            import module.prompt
-    return app
-############################################
-#Info
-############################################
-info={"sys":"CmdOS v2.10.2 - Basé en Python",
-      "system":"CmdOS v2.10.2 - Basé en Python",
-      "time":"Module Time""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep",
-      "random":"Module Random""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep",
-      "music":"Module Music""\nVersion : 1.2""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module simpleaudio",
-      "uuid":"Module Uuid""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module uuid4",
-      "image":"Module Image""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep, adresse""\nNote : basé avec le module PIL",
-      "browser":"Module Browser""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module browser",
-      "print":"Module Print""\nVersion : 1.0""\nAuteur : système""\nPermission : displaysplit, rep""\nNote : basé avec le module termcolor",
-      "maths":"Module Maths""\nVersion : 1.1""\nPermission : displaysplit, rep""\nAuteur : système",
-      "download":"Module Download""\nVersion : 1.1""\nAuteur : système""\nPermission : adresseuser, displaysplit, rep""\nNote : basé sur le module request",
-      "prompt":"Module Prompt""\nVersion : 1.0""\nPermission : displaysplit, rep""\nAuteur : système"}
 ############################################
 #Adresse
 ############################################
@@ -207,25 +66,28 @@ adresse=os.path.dirname(adresse)
 if not os.path.exists(adresse)==True:
     while not os.path.exists(adresse)==True:
         adresse=input("Le système n'a pas démmarrer correctement, veulliez rentrer le chemin absolu du dossier ou se trouve le fichier CmdOS.py : ")
-if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/app") and os.path.exists(adresse+"/user") and os.path.exists(adresse+"/logs")):
-    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe:  __pycache__, app, user, module, logs et README.md.","red",attrs=["bold"]))
+if not(os.path.exists(adresse+"/README.md") and os.path.exists(adresse+"/__pycache__") and os.path.exists(adresse+"/module") and os.path.exists(adresse+"/user") and os.path.exists(adresse+"/logs")):
+    print(colored("Le système ne peut pas fonctionner dans son intégrité car certain dosssier/fichier ne sont pas présents.\nVeulliez vous assurez que les dossier suivant existe:  __pycache__, user, module, logs et README.md.","red",attrs=["bold"]))
     quit()
 ############################################
 #Connexion
 ############################################
-print(colored("""CmdOS v2.10.2""","green",attrs=["bold"])) 
-host="ftp-cmdos.alwaysdata.net"
-user="cmdos"
-password="CmdOS2008)"
-connect=FTP(host,user,password)
-connect.sendcmd('CWD www')
-connect.sendcmd("CWD command")
-connsql = psycopg2.connect(user = "cmdos",password = "CmdOS2008)",host = "postgresql-cmdos.alwaysdata.net",port = "5432",database = "cmdos_user")
-cur = connsql.cursor()
+print(colored("""CmdOS v2.11""","green",attrs=["bold"])) 
+try:
+    host="ftp-cmdos.alwaysdata.net"
+    user="cmdos"
+    password="CmdOS2008)"
+    connect=FTP(host,user,password)
+    connect.sendcmd('CWD www')
+    connect.sendcmd("CWD command")
+    connsql = psycopg2.connect(user = "cmdos",password = "CmdOS2008)",host = "postgresql-cmdos.alwaysdata.net",port = "5432",database = "cmdos_user")
+    cur = connsql.cursor()
+except:
+    pass
 charginstall=1
 displaysplit=0
 logserver=1
-version="2.10.2"
+version="2.11"
 invit=0
 ##########################
 #Fonction Cmd
@@ -234,30 +96,8 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
 #################################
 #Variable, module
 #################################
-    global adresse,app,mdptext,repmdp,connect,version,a,adresseapp
-    store="Bienvenue dans le store de CmdOS, voici les modules disponibles :"+"\nrandom - générer un nombre aléatoire"+"\ntime - attendre un temps"+"\nmusic - permet de jouer un son"+"\nuuid - générer des identifiants aléatoire"+"\nimage - permet d'afficher une image"+"\nbrowser - permet d'afficher une page web"+"\nprint - permet d'afficher du texte en couleur dans la console"+"\ndownload - permet de télécharger une page web"+"\nprompt - permet d'éxécuter des commandes de l'invite de commande"+"\nPour installer un module, faites <<store install>> suivie du nom du module"+"\nPour desinstaller un module, faites <<store uninstall>> suivie du nom du module"+"\nPour voir la liste des modules installés faites <<store list>>"
+    global adresse,mdptext,repmdp,connect,version,a,adresseapp
     while True:
-        if invit==0:
-            if app["random"]=="1":
-                import module.random
-            if app["time"]=="1":
-                import module.time
-            if app["music"]=="1":
-                import module.music
-            if app["uuid"]=="1":
-                import module.uuid
-            if app["image"]=="1":
-                import module.image
-            if app["browser"]=="1":
-                import module.browser
-            if app["print"]=="1":
-                import module.print
-            if app["maths"]=="1":
-                import module.maths
-            if app["download"]=="1":
-                import module.download
-            if app["prompt"]=="1":
-                import module.prompt
 ###########################################
 #Gestion entrée utilisateur et result
 ###########################################
@@ -344,16 +184,6 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                 print(com[aide])
             else:
                 i=Result("commande",rt="notfound",object=aide,module="help")
-                i.print()
-#################################
-#Store
-#################################
-        elif rep=="store":
-            if invit==0:
-                i=Result(store,rt="stdout")
-                i.print()
-            else:
-                i=Result(text="Le mode invité désactive cette commande",rt="error",module="system")
                 i.print()
 #################################
 #Detail
@@ -479,7 +309,7 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                 fichiers = os.listdir(adresse)
                 if ren in fichiers:
                     ren2=adresse+"/"+ren
-                    ren3=input("Nouveau nom : ")
+                    ren3=adresse+"/"+input("Nouveau nom : ")
                     try:
                         os.rename(ren2, ren3)
                     except:
@@ -590,84 +420,38 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
 #################################
         elif rep.startswith("store install "):
             if invit==0:
-                install=rep[14::]
-                if install in app: 
-                    app.update({install:"1"})
-                    if charginstall==1:
-                        cmd_fonction.charg(0.3,colored("Installation du module...","blue",attrs=["bold"]))
-                        print(colored(("CmdOS v"+version),"green",attrs=["bold"]))
-                        print("""Taper "help" pour plus d'information""")
-                    install2=colored("Le module ","blue",attrs=["bold"])+colored(install,"blue",attrs=["bold","underline"])+colored(" a bien été installé","blue",attrs=["bold"])
-                    i=Result(install2,"stdout")
-                    i.print()
-                    if install=="random":
-                        import module.random
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/random.txt","w")
-                        appt.write(app.get("random"))
-                        appt.close()
-                    if install=="time":
-                        import module.time
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/time.txt","w")
-                        appt.write(app.get("time"))
-                        appt.close()
-                    if install=="music":
-                        import module.music
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/music.txt","w")
-                        appt.write(app.get("music"))
-                        appt.close()
-                    if install=="uuid":
-                        import module.uuid
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/uuid.txt","w")
-                        appt.write(app.get("uuid"))
-                        appt.close()
-                    if install=="image":
-                        import module.image
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/image.txt","w")
-                        appt.write(app.get("image"))
-                        appt.close()
-                    if install=="browser":
-                        import module.browser
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/browser.txt","w")
-                        appt.write(app.get("browser"))
-                        appt.close()
-                    if install=="print":
-                        import module.print
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/print.txt","w")
-                        appt.write(app.get("print"))
-                        appt.close()
-                    if install=="maths":
-                        import module.maths
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/maths.txt","w")
-                        appt.write(app.get("maths"))
-                        appt.close()
-                    if install=="download":
-                        import module.download
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/download.txt","w")
-                        appt.write(app.get("download"))
-                        appt.close()
-                    if install=="prompt":
-                        import module.prompt
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/prompt.txt","w")
-                        appt.write(app.get("prompt"))
-                        appt.close()
+                if cmd_fonction.connect():
+                    install=rep[14::]
+                    cur.execute("SELECT link FROM module WHERE name='"+install+"';")
+                    data=cur.fetchall()
+                    if not data==[]:
+                        if not install in os.listdir(adresseapp+"/module"):
+                            data=list(data[0])
+                            data=data[0]
+                            print("Récupération des fichiers du module...")
+                            filename, headers = urllib.request.urlretrieve(data+"/archive/refs/heads/main.zip", filename=adresseapp+"/"+install+".zip")
+                            print("Dépaquetage en cours...")
+                            with zipfile.ZipFile(adresseapp+"/"+install+".zip","r") as zipref:
+                                zipref.extractall(adresseapp)
+                            os.remove(adresseapp+"/"+install+".zip")
+                            list_file=os.listdir(adresseapp+"/"+install+"-main")
+                            os.makedirs(adresseapp+"/module/"+install)
+                            for file in list_file:
+                                print("Déplacement du fichier "+file+" depuis "+adresseapp+"/"+install+"-main/"+file+" vers "+adresseapp+"/module/"+install)
+                                shutil.move(adresseapp+"/"+install+"-main/"+file,adresseapp+"/module/"+install)
+                            os.rmdir(adresseapp+"/"+install+"-main")
+                            i=Result("Le module "+install+" a bien été installé","stdout")
+                        else:
+                            i=Result(text="Le module est déja installé",rt="error",module="store")
+                            i.print()  
+                    else:
+                        i=Result(module="store",object=install,rt="notfound",text=None)
+                        i.print()
                 else:
-                    i=Result(module="store",object="module",rt="notfound",text=None)
-                    i.print()
+                    i=Result(text="Il faut être connecté à Internet pour utiliser cette commande",rt="error",module="store")
+                    i.print()   
             else:
                 i=Result(text="Le mode invité désactive cette commande",rt="error",module="system")
-                i.print()
-#################################
-#Execute
-#################################
-        elif rep.startswith("execute"):
-            impor=rep.split()
-            if displaysplit==1:
-                Result.split()
-            if len(impor)==3:
-                command="""import termcolor\ntry:\n    from app."""+impor[1]+""" import *\n    """+impor[2]+"""()\nexcept ModuleNotFoundError:\n    print(termcolor.colored("L'app ou la fonction indiquée n'existe pas","yellow",attrs=["bold"]))\nexcept NameError:\n    print(termcolor.colored("L'app ou la fonction indiquée n'existe pas","yellow",attrs=["bold"]))"""
-                subprocess.run([sys.executable, "-c",command])
-            else:
-                i=Result("La commande est mal formulée","error",module="execute")
                 i.print()
 #################################
 #Shell
@@ -676,82 +460,66 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
             cmd_fonction.clear()
             sys.exit()
 #################################
-#Info
-#################################
-        elif rep.startswith("info"):
-            info_command=rep.split()
-            if displaysplit==1:
-                print(info_command)
-            if len(info_command)==2 or len(info_command)==3:
-                if info_command[1] in info:
-                    i=Result(info[info_command[1]],"stdout")
-                    i.print()
-                elif info_command[1]=="app" and len(info_command)==3:
-                    command="from termcolor import colored\ntry:\n    import app."+info_command[2]+"\n    print(app."+info_command[2]+""".__annotations__)\nexcept ModuleNotFoundError or NameError:\n    print(colored("L'app indiquée n'existe pas","yellow",attrs=["bold"]))"""
-                    subprocess.run([sys.executable, "-c",command])
-                else:
-                    i=Result(module="info",object=info_command[1],rt="notfound",text=None)
-                    i.print()
-            else:
-                i=Result("La commande est mal formulée","error",module="info")
-                i.print()
-#################################
 #Store uninstall
 #################################
         elif rep.startswith("store uninstall "):
             if invit==0:
                 uninstall=rep[16::]
-                if uninstall in app:
-                    app.update({uninstall:"0"})
-                    uninstall1=colored("Le module ","blue",attrs=["bold"])+colored(uninstall,"blue",attrs=["bold","underline"])+colored(" a bien été desinstallé","blue",attrs=["bold"])
-                    i=Result(uninstall1,"stdout")
-                    i.print()
-                    if uninstall=="random":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/random.txt","w")
-                        appt.write(app.get("random"))
-                        appt.close()
-                    if uninstall=="time":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/time.txt","w")
-                        appt.write(app.get("time"))
-                        appt.close()
-                    if uninstall=="music":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/music.txt","w")
-                        appt.write(app.get("music"))
-                        appt.close()
-                    if uninstall=="uuid":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/uuid.txt","w")
-                        appt.write(app.get("uuid"))
-                        appt.close()
-                    if uninstall=="image":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/image.txt","w")
-                        appt.write(str(app.get("image")))
-                        appt.close()
-                    if uninstall=="browser":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/browser.txt","w")
-                        appt.write(str(app.get("browser")))
-                        appt.close()
-                    if uninstall=="print":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/print.txt","w")
-                        appt.write(str(app.get("print")))
-                        appt.close()
-                    if uninstall=="maths":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/maths.txt","w")
-                        appt.write(str(app.get("maths")))
-                        appt.close()
-                    if uninstall=="download":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/download.txt","w")
-                        appt.write(str(app.get("download")))
-                        appt.close()
-                    if uninstall=="prompt":
-                        appt=open(adresseapp+"/user/"+repname+"/save_module/prompt.txt","w")
-                        appt.write(str(app.get("prompt")))
-                        appt.close()
-                else:
-                    i=Result(module="store",object="module",rt="notfound",text=None)
+                try:
+                    shutil.rmtree(adresseapp+"/module/"+uninstall)
+                except:
+                    i=Result(module="store",object=uninstall,rt="notfound",text=None)
                     i.print()
             else:
                 i=Result(text="Le mode invité désactive cette commande",rt="error",module="system")
                 i.print()
+#################################
+#store
+#################################
+        elif rep=="store":
+            if cmd_fonction.connect():
+                cur.execute("SELECT * FROM module;")
+                data=cur.fetchall()
+                data=list(data)
+                i=Result("Voici tous les modules disponibles :","stdout")
+                i.print()
+                for i in range(len(data)):
+                    i=Result(text="#"+str(i+1)+" "+data[i][0]+" : "+data[i][4],rt="stdout")
+                    i.print()
+            else:
+                i=Result(text="Il faut être connecté à Internet pour utiliser cette commande",rt="error",module="store")
+                i.print()      
+#################################
+#store info
+#################################
+        elif rep.startswith("store info"):
+            if cmd_fonction.connect():
+                cur.execute("SELECT * FROM module WHERE name='"+rep[11::]+"';")
+                data=cur.fetchall()
+                if not data==[]:
+                    data=list(data[0])
+                    i=Result("Information sur le module:","stdout")
+                    i.print()
+                    i=Result(text=("Nom : "+data[0]),rt="stdout")
+                    i.print()
+                    i=Result(text=("Auteur : "+data[1]),rt="stdout")
+                    i.print()
+                    i=Result(text=("Taille : "+data[2]),rt="stdout")
+                    i.print()
+                    i=Result(text=("Dernière version : "+data[3]),rt="stdout")
+                    i.print()
+                    i=Result(text=("Description : "+data[4]),rt="stdout")
+                    i.print()
+                    i=Result(text=("Autorisation : "+data[5]),rt="stdout")
+                    i.print()
+                    i=Result(text=("Lien vers le github : "+data[6]),rt="stdout")
+                    i.print()
+                else:
+                    i=Result(text="Ce module n'existe pas",rt="error",module="store")
+                    i.print() 
+            else:
+                i=Result(text="Il faut être connecté à Internet pour utiliser cette commande",rt="error",module="store")
+                i.print()    
 #################################
 #Compte modification
 #################################
@@ -891,65 +659,12 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
 #################################
         elif rep=="store list":
             if invit==0:
-                if app.get("random")=="1":
-                    i=Result("Le module random est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module random n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("time")=="1":
-                    i=Result("Le module time est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module time n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("music")=="1":
-                    i=Result("Le module music est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module music n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("uuid")=="1":
-                    i=Result("Le module uuid est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module uuid n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("image")=="1":
-                    i=Result("Le module image est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module image n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("browser")=="1":
-                    i=Result("Le module browser est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module browser n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("print")=="1":
-                    i=Result("Le module print est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module print n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("maths")=="1":
-                    i=Result("Le module maths est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module maths n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("download")=="1":
-                    i=Result("Le module download est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module download n'est pas installé",rt="stdout")
-                    i.print()
-                if app.get("prompt")=="1":
-                    i=Result("Le module prompt est installé",rt="stdout")
-                    i.print()
-                else:
-                    i=Result("Le module prompt n'est pas installé",rt="stdout")
+                fichiers = os.listdir(adresseapp+"/module")
+                longueur=len(fichiers)
+                i=Result("Voici les module installés :",rt="stdout")
+                i.print()
+                for element in range(longueur):
+                    i=Result(" "+fichiers[element]+" v"+open("module/"+fichiers[element]+"/version.txt","r").readlines()[0],rt="stdout")
                     i.print()
             else:
                 i=Result(text="Le mode invité désactive cette commande",rt="error",module="system")
@@ -978,7 +693,6 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                     print("Cette fonction permet d'afficher la valeur des variables systèmes")
                     input("Taper entrer pour exécuter")
                     print("mdpt='"+mdpt+"'")
-                    print("app="+str(app)+"")
                     print("adresse='"+adresse+"'")
                     print("version="+version+"")
                     print("godmode1='"+godmode1+"'")
@@ -1002,7 +716,6 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                     input("Taper entrer pour exécuter")
                     print("login() - protocole qui demande le mot de passe et lance le protocole cmd()")
                     print("cmd() - protocole qui gère les interactions avec l'utilisateur")
-                    print("appinitext() - protocole qui récupère les modules installés ou non")
                     print("charg(chrag1=0.1,t=colored(\"Démarrage du système...\",\"blue\",attrs=[\"bold\"])) - protocole qui permet un chargement visuel")
                     print("clear() - protocole qui efface l'invite de commande")
                     print("connect() - vérifie si on est connecté à internet")
@@ -1010,8 +723,6 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                     print("Cette fonction éxécute le protocole demandé (elle positionne automatiquement les arguments)")
                     input("Taper entrer pour exécuter")
                     godmode2=input("Quel protocole voulez vous éxécuter ? : ")
-                    if godmode2=="appinitext":
-                        app=appinitext(repname)
                     if godmode2=="cmd":
                         cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,log)
                     if godmode2=="login":
@@ -1048,105 +759,53 @@ def cmd(admin,charginstall,displaysplit,logserver,repname,mdpt,adresseuser,key,l
                     print("Cette fonction fait la liste des classes systèmes")
                     input("Taper entrer pour exécuter")
                     print("Result() - permet l'affichage des résultats / erreurs des différentes commandes")
-                if godmode1=="sys.protocol.reload":
-                    print("Cette fonction réimporte les différents dépendances")
-                    input("Taper entrer pour exécuter")
-                    reload=input("Entrer votre choix (module/cmd_fonction) : ")
-                    if reload=="module":
-                        if app["random"]=="1":
-                            import module.random
-                        if app["time"]=="1":
-                            import module.time
-                        if app["music"]=="1":
-                            import module.music
-                        if app["uuid"]=="1":
-                            import module.uuid
-                        if app["image"]=="1":
-                            import module.image
-                        if app["browser"]=="1":
-                            import module.browser
-                        if app["print"]=="1":
-                            import module.print
-                        if app["maths"]=="1":
-                            import module.maths
-                        if app["download"]=="1":
-                            import module.download
-                        if app["prompt"]=="1":
-                            import module.prompt
-                    # if reload=="cmd_fonction":
-                        # import cmd_fonction
             else:
                 i=Result(module="godmode",rt="error",text="Vous devez être connecté en tant qu'administrateur et à internet pour utiliser le godmode")
                 i.print()
 ###############################
 #Module                       #
 ###############################
-        elif rep.startswith("random") and invit==0:
-            if app.get("random")=="1":
-                module.random.execute(displaysplit,rep)
+        elif not len(rep.split())==0 and rep.split()[0] in os.listdir(adresseapp+"/module") and invit==0:
+            moduler=rep.split()[0]
+            if not os.path.exists(adresseapp+"/module/"+moduler+"/authorisation.txt"):
+                try:
+                    cur.execute("SELECT * FROM module WHERE name='"+moduler+"';")
+                    infomodule=cur.fetchall()
+                    infomodule=list(infomodule[0])
+                    if infomodule[5]=="NULL":
+                        autorisation=0
+                    else:
+                        autorisation=1
+                        listnec=infomodule[5].split()
+                except:
+                    autorisation=0
+                litauto="arg="+str(rep.split()[1::])
             else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("time") and invit==0:
-            if app.get("time")=="1":
-                module.time.execute(displaysplit,rep)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("music") and invit==0:
-            if app.get("music")=="1":
-                module.music.execute(displaysplit,rep,adresse)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep=="uuid" and invit==0:
-            if app.get("uuid")=="1":
-                module.uuid.execute()
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("image") and invit==0:
-            if app.get("image")=="1":
-                module.image.execute(displaysplit,rep,adresse)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("browser") and invit==0:
-            if app.get("browser")=="1":
-                module.browser.execute(displaysplit,rep)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("print") and invit==0:
-            if app.get("print")=="1":
-                module.print.execute(displaysplit,rep)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("maths") and invit==0:
-            if app.get("maths")=="1":
-                module.maths.execute(displaysplit,rep)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("download") and invit==0:
-            if app.get("download")=="1":
-                module.download.execute(adresseuser,displaysplit,rep)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print()
-        elif rep.startswith("prompt") and invit==0:
-            if app.get("prompt")=="1":
-                module.prompt.execute(displaysplit,rep)
-            else:
-                i=Result(module="module",text="Ce module n'est pas installé ou n'est pas bien formulé",rt="error")
-                i.print() 
+                try:
+                    infomodule=open(adresseapp+"/module/"+moduler+"/authorisation.txt","r").readlines()
+                    if infomodule[0]=="NULL":
+                        autorisation=0
+                    else:
+                        autorisation=1
+                        listnec=infomodule[0].split()
+                except:
+                    autorisation=0
+                litauto="arg="+str(rep.split()[1::])
+            if autorisation==1:
+                if "displaysplit" in listnec:
+                    litauto=litauto+",displaysplit="+str(displaysplit)
+                if "rep" in listnec:
+                    litauto=litauto+""",rep=\""""+rep+"""\""""
+                if "adresse" in listnec:
+                    litauto=litauto+""",adresse=\""""+adresseapp+"/user/"+repname+"""\""""
+            command="from module."+moduler+"."+moduler+" import execute\nexecute("+litauto+")"
+            subprocess.run([sys.executable, "-c",command])
 #################################
 #Commande n'existe pas
 #################################
         else:
             if not rep=="":
-                error="cette commande n'existe pas : essayer help"
+                error="cette commande n'existe pas ou le module en question n'est pas installé : essayer help"
                 i=Result(text=error,rt="error",module="system")
                 i.print()
 #################################
@@ -1184,14 +843,12 @@ def login():
                             if repmdp==indecode.decode(repsqluser[1],repsqluser[3]):
                                 os.makedirs(adresseapp+"/user/"+repname+"/image")
                                 os.makedirs(adresseapp+"/user/"+repname+"/music")
-                                os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                 os.makedirs(adresseapp+"/user/"+repname+"/download")
                                 logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
                                 logtxt.close()
                                 logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
                                 logtxt.write("1")
                                 logtxt.close()
-                                app=appinitext(repname)
                                 adresse=adresse+"/user/"+repname
                                 adresseuser=adresse
                                 valida="ok"
@@ -1241,14 +898,12 @@ def login():
                                     connsql.commit()
                                     os.makedirs(adresseapp+"/user/"+repname+"/image")
                                     os.makedirs(adresseapp+"/user/"+repname+"/music")
-                                    os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                     os.makedirs(adresseapp+"/user/"+repname+"/download")
                                     logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
                                     logtxt.close()
                                     logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
                                     logtxt.write("1")
                                     logtxt.close()
-                                    app=appinitext(repname)
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
                                     valida="ok"
@@ -1329,14 +984,12 @@ def login():
                                     try:
                                         os.makedirs(adresseapp+"/user/"+repname+"/image")
                                         os.makedirs(adresseapp+"/user/"+repname+"/music")
-                                        os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                         os.makedirs(adresseapp+"/user/"+repname+"/download")
                                         logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
                                         logtxt.close()
                                         logtxt=open(adresseapp+"/user/"+repname+"/log.txt","w")
                                         logtxt.write("1")
                                         logtxt.close()
-                                        app=appinitext(repname)
                                         adresse=adresse+"/user/"+repname
                                         adresseuser=adresse
                                         mdpt=repmdp
@@ -1380,7 +1033,6 @@ def login():
                                         connsql.commit()
                                         os.makedirs(adresseapp+"/user/"+repname+"/image")
                                         os.makedirs(adresseapp+"/user/"+repname+"/music")
-                                        os.makedirs(adresseapp+"/user/"+repname+"/save_module")
                                         os.makedirs(adresseapp+"/user/"+repname+"/download")
                                         logtxt=open(adresseapp+"/logs/"+repname+".txt","w")
                                         logtxt.close()
@@ -1388,7 +1040,6 @@ def login():
                                         logtxt.write("1")
                                         logtxt.close()
                                         log=1
-                                        app=appinitext(repname)
                                         adresse=adresse+"/user/"+repname
                                         adresseuser=adresse
                                         mdpt=repmdp
@@ -1448,7 +1099,6 @@ def login():
                                     mdpt=indecode.decode(repsqluser[1],repsqluser[3])
                                     adresse=adresse+"/user/"+repname
                                     adresseuser=adresse
-                                    app=appinitext(repname)
                                     logtxt=open(adresseapp+"/user/"+repname+"/log.txt")
                                     data=logtxt.readlines()
                                     data=data[0]
